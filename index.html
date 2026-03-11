@@ -92,11 +92,213 @@
         }
 
         section {
-            padding: 100px 10%;
+            padding: 100px 5%;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
+        }
+
+        /* Hero Refined */
+        .hero {
+            position: relative;
+            padding: 0;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .hero-video-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .hero-video-container video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Video Fallback - Dot Grid */
+        .video-fallback {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle, rgba(201,168,76,0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            display: none;
+            z-index: -1;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(6,6,6,0.4) 0%, transparent 40%, #060606 100%);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: absolute;
+            bottom: 10%;
+            left: 5%;
+            z-index: 2;
+            max-width: 800px;
+        }
+
+        .hero .eyebrow {
+            font-family: var(--font-label);
+            color: var(--gold);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .hero .eyebrow::before {
+            content: '';
+            width: 40px;
+            height: 1px;
+            background: var(--gold);
+        }
+
+        .hero h1 {
+            font-size: clamp(68px, 10vw, 144px);
+            line-height: 0.85;
+            text-transform: uppercase;
+            font-family: var(--font-display);
+            margin-bottom: 30px;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .hero h1 span { display: block; }
+        .hero h1 .white { color: #fff; }
+        .hero h1 .gold { color: var(--gold); }
+        .hero h1 .stroke { 
+            -webkit-text-stroke: 1px var(--gold); 
+            color: transparent; 
+        }
+
+        .hero-subtext {
+            font-size: 15px;
+            font-family: var(--font-body);
+            max-width: 460px;
+            color: rgba(240,237,232,0.6);
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .hero-btns {
+            display: flex;
+            gap: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .btn-ghost {
+            padding: 12px 25px;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            text-decoration: none;
+            font-family: var(--font-body);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+        }
+
+        .btn-ghost:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        /* Stats */
+        .hero-stats {
+            position: absolute;
+            bottom: 10%;
+            right: 5%;
+            z-index: 2;
+            display: flex;
+            gap: 50px;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .stat-item {
+            text-align: right;
+        }
+
+        .stat-val {
+            font-family: var(--font-display);
+            font-size: 46px;
+            color: var(--gold);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-family: var(--font-label);
+            font-size: 10px;
+            color: rgba(240,237,232,0.4);
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        /* Scroll Indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            z-index: 2;
+        }
+
+        .scroll-line {
+            width: 1px;
+            height: 60px;
+            background: rgba(201,168,76,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scroll-line::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gold);
+            animation: scrollMove 2s infinite ease-in-out;
+        }
+
+        @keyframes scrollMove {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        .scroll-label {
+            font-family: var(--font-label);
+            font-size: 9px;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         /* Navigation Refined */
@@ -401,9 +603,47 @@
 
     <main>
         <section class="hero">
-            <span class="label">Nairobi Elite Service</span>
-            <h1>Car Clan</h1>
-            <p>Experience the pinnacle of luxury mobility in Kenya. Exclusive rentals for those who demand excellence.</p>
+            <div class="hero-video-container">
+                <video autoplay muted loop playsinline id="hero-video">
+                    <source src="assets/hero.mp4" type="video/mp4">
+                </video>
+                <div class="video-fallback"></div>
+            </div>
+            <div class="hero-overlay"></div>
+
+            <div class="hero-content">
+                <div class="eyebrow">Premium Car Rentals · Est. 2019</div>
+                <h1>
+                    <span class="white">DRIVE</span>
+                    <span class="gold">BEYOND</span>
+                    <span class="stroke">LIMITS</span>
+                </h1>
+                <p class="hero-subtext">Experience the pinnacle of luxury mobility in Nairobi. Exclusive rentals for those who demand excellence and unmatched performance.</p>
+                <div class="hero-btns">
+                    <a href="#showroom" class="btn-book">Explore Showroom</a>
+                    <a href="#how-it-works" class="btn-ghost">How It Works</a>
+                </div>
+            </div>
+
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-val">48+</div>
+                    <div class="stat-label">Luxury Fleet</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-val">6</div>
+                    <div class="stat-label">Years Excellence</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-val">4.9</div>
+                    <div class="stat-label">Client Trust</div>
+                </div>
+            </div>
+
+            <div class="scroll-indicator">
+                <div class="scroll-line"></div>
+                <span class="scroll-label">Scroll</span>
+            </div>
         </section>
 
         <!-- Showroom Section -->
@@ -523,15 +763,6 @@
             const chat = document.getElementById('chatbot');
             chat.style.display = chat.style.display === 'flex' ? 'none' : 'flex';
         }
-        // Scroll Listener for Navbar
-        const navbar = document.getElementById('navbar');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 60) {
-                navbar.classList.add('scrolled');
-            } else {
-                navbar.classList.remove('scrolled');
-            }
-        });
 
         // Refined Custom Cursor with Lerp
         const dot = document.getElementById('cursor-dot');
@@ -563,12 +794,51 @@
         // Register ScrollTrigger
         gsap.registerPlugin(ScrollTrigger);
 
-        // GSAP Reveal Animations
-        gsap.from(".hero h1", {
-            y: 100, opacity: 0, duration: 1.5, ease: "power4.out"
+        // Entrance Animation Logic
+        const entranceSequence = [
+            { el: '.hero .eyebrow', delay: 300 },
+            { el: '.hero h1', delay: 500 },
+            { el: '.hero-subtext', delay: 700 },
+            { el: '.hero-btns', delay: 900 },
+            { el: '.hero-stats', delay: 1100 }
+        ];
+
+        entranceSequence.forEach(item => {
+            setTimeout(() => {
+                const element = document.querySelector(item.el);
+                if (element) {
+                    element.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }
+            }, item.delay);
         });
 
+        // Video Fallback Check
+        const video = document.getElementById('hero-video');
+        const fallback = document.querySelector('.video-fallback');
+        
+        video.onerror = () => {
+            video.style.display = 'none';
+            fallback.style.display = 'block';
+        };
+
+        // Scroll Listener for Navbar
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (navbar) {
+                if (window.scrollY > 60) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            }
+        });
+
+        // GSAP Section Reveals
         gsap.utils.toArray('section').forEach(section => {
+            if (section.classList.contains('hero')) return; // Skip hero as it has entrance animation
+
             gsap.from(section.querySelectorAll('.label, h2, p, .car-card'), {
                 scrollTrigger: {
                     trigger: section,
