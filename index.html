@@ -42,17 +42,54 @@
             line-height: 1.6;
         }
 
-        /* Grain Noise Overlay */
-        .grain-overlay {
+        /* Loading Screen */
+        #loading-screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('https://grainy-gradients.vercel.app/noise.svg');
-            opacity: 0.05;
-            pointer-events: none;
-            z-index: 9999;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10001;
+            transition: opacity 0.8s ease;
+        }
+
+        .loading-logo {
+            font-family: var(--font-display);
+            font-size: 3rem;
+            margin-bottom: 20px;
+            letter-spacing: 5px;
+        }
+
+        .loading-bar-container {
+            width: 200px;
+            height: 2px;
+            background: rgba(201,168,76,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loading-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 100%;
+            background: var(--gold);
+            transition: width 0.3s;
+        }
+
+        .loading-text {
+            font-family: var(--font-label);
+            font-size: 10px;
+            color: var(--gold);
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         /* Custom Cursor Refined */
@@ -540,6 +577,9 @@
         .info-price {
             margin-left: auto;
             text-align: right;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         .price-label {
@@ -549,10 +589,26 @@
             text-transform: uppercase;
         }
 
-        .price-value {
-            font-family: var(--font-display);
-            font-size: 32px;
-            color: var(--white);
+        .quote-btns {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-quote {
+            padding: 10px 20px;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            text-decoration: none;
+            font-size: 10px;
+            font-family: var(--font-body);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+
+        .btn-quote:hover {
+            background: var(--gold);
+            color: #000;
         }
 
         .dot-indicators {
@@ -579,30 +635,16 @@
             transform: scale(1.5);
         }
 
-        /* Features Section */
         .features {
             background: #060606;
             text-align: center;
         }
 
-        .payment-logos {
+        .quote-channels {
             display: flex;
             justify-content: center;
-            gap: 50px;
+            gap: 30px;
             margin-top: 50px;
-            filter: grayscale(1) invert(1);
-            opacity: 0.6;
-            transition: 0.3s;
-        }
-
-        .payment-logos img {
-            height: 60px;
-            object-fit: contain;
-        }
-
-        .payment-logos:hover {
-            filter: grayscale(0) invert(0);
-            opacity: 1;
         }
 
         /* Testimonials */
@@ -723,12 +765,49 @@
         @media (max-width: 960px) {
             .nav-links { display: none; }
             nav { padding: 20px 5%; }
-            .hero h1 { font-size: 4rem; }
+            .hero h1 { font-size: 4.5rem; }
+            .hero-stats { display: none; }
+            .hero-content { bottom: 15%; }
+            
+            .showroom-info {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 20px;
+            }
+            
+            .info-specs {
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 20px;
+            }
+            
+            .info-price {
+                margin: 0 auto;
+                align-items: center;
+            }
+            
+            #showroom-canvas-wrap { height: 400px; }
+            
             .chatbot-container { width: 90%; right: 5%; }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 { font-size: 3.5rem; }
+            section { padding: 60px 5%; }
         }
     </style>
 </head>
 <body>
+
+    <div id="loading-screen">
+        <div class="loading-logo">
+            <span style="color: var(--gold)">CAR</span> <span style="color: #fff">CLAN</span>
+        </div>
+        <div class="loading-bar-container">
+            <div class="loading-bar" id="loading-bar"></div>
+        </div>
+        <div class="loading-text" id="loading-text">Initializing Showroom...</div>
+    </div>
 
     <div class="grain-overlay"></div>
     <div id="cursor-dot"></div>
@@ -826,8 +905,11 @@
                         <span class="spec-value" id="car-speed">305 km/h</span>
                     </div>
                     <div class="info-price">
-                        <span class="price-label">Daily Rate</span>
-                        <div class="price-value" id="car-price">KES 145,000</div>
+                        <span class="price-label">Request Booking</span>
+                        <div class="quote-btns">
+                            <a href="#" id="quote-whatsapp" class="btn-quote" target="_blank">WhatsApp</a>
+                            <a href="#" id="quote-email" class="btn-quote">Email</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -860,12 +942,10 @@
         <section id="features" class="features">
             <div class="label">Seamless Experience</div>
             <h2>Premium Features</h2>
-            <div class="payment-logos">
-                <!-- Using placeholders for Mpesa/Pesapal logos -->
-                <img src="https://upload.wikimedia.org/wikipedia/commons/1/15/M-PESA_LOGO-01.svg" alt="M-Pesa">
-                <img src="https://www.pesapal.com/assets/img/pesapal-logo.png" alt="Pesapal" style="filter: invert(1);">
+            <div class="quote-channels">
+                <a href="#contact" class="btn-book">Contact Our Concierge</a>
             </div>
-            <p style="margin-top: 30px; font-family: var(--font-label);">Secure Instant Payments via M-Pesa & Pesapal</p>
+            <p style="margin-top: 30px; font-family: var(--font-label);">Personalized Service for Nairobi's Elite</p>
         </section>
 
         <!-- How It Works -->
@@ -1034,63 +1114,62 @@
 
         // Advanced WebGL Showroom Implementation
         const carData = [
-            {
-                name: "BMW M5 CS",
-                category: "Elite Performance",
-                power: "627 HP",
-                accel: "2.9s",
-                speed: "305 km/h",
-                price: "KES 145,000",
-                file: "assets/fleet/bmw_m5_cs.glb",
-                color: 0x1a1a1a
-            },
-            {
-                name: "Porsche 911 Turbo S",
-                category: "Precision Sports",
-                power: "640 HP",
-                accel: "2.7s",
-                speed: "330 km/h",
-                price: "KES 160,000",
-                file: "assets/fleet/2022_porsche_911_trubo_s.glb",
-                color: 0x222222
-            },
-            {
-                name: "G-Class AMG G63",
-                category: "Luxury Off-Road",
-                power: "577 HP",
-                accel: "4.5s",
-                speed: "220 km/h",
-                price: "KES 110,000",
-                file: "assets/fleet/2025_mercedes-benz_g-class_amg_g_63.glb",
-                color: 0x0a0a0a
-            },
-            {
-                name: "Land Cruiser 300",
-                category: "Elite Adventure",
-                power: "409 HP",
-                accel: "6.7s",
-                speed: "210 km/h",
-                price: "KES 55,000",
-                file: "assets/fleet/2022_toyota_land_cruiser_300_vx.r.glb",
-                color: 0xffffff
-            }
+            { name: "BMW M5 CS", category: "Elite Performance", power: "627 HP", accel: "2.9s", speed: "305 km/h", file: "assets/fleet/bmw_m5_cs.glb" },
+            { name: "Porsche 911 Turbo S", category: "Precision Sports", power: "640 HP", accel: "2.6s", speed: "330 km/h", file: "assets/fleet/2022_porsche_911_trubo_s.glb" },
+            { name: "Mercedes G-Class AMG G63", category: "Luxury Icon", power: "577 HP", accel: "4.2s", speed: "220 km/h", file: "assets/fleet/2025_mercedes-benz_g-class_amg_g_63.glb" },
+            { name: "Lamborghini Centenario", category: "Hypercar Exclusive", power: "770 HP", accel: "2.8s", speed: "350 km/h", file: "assets/fleet/lamborghini_centenario_lp-770_interior_sdc.glb" },
+            { name: "Audi RS7", category: "Sportback King", power: "591 HP", accel: "3.5s", speed: "305 km/h", file: "assets/fleet/audi.glb" },
+            { name: "BMW X6M Competition", category: "Sports Activity Coupe", power: "617 HP", accel: "3.8s", speed: "290 km/h", file: "assets/fleet/bmw_x6m_competition_assetto__www.vecarz.com.glb" },
+            { name: "Mercedes GLE 63 AMG", category: "High-Performance SUV", power: "577 HP", accel: "3.9s", speed: "250 km/h", file: "assets/fleet/2016_mercedes-benz_gle63_amg_coupe.glb" },
+            { name: "Mercedes S63 AMG Coupe", category: "Luxury Coupe", power: "603 HP", accel: "3.4s", speed: "300 km/h", file: "assets/fleet/2018_mercedes-benz_s63_amg_coupe.glb" },
+            { name: "BMW M4 Competition", category: "Precision Coupe", power: "510 HP", accel: "3.9s", speed: "290 km/h", file: "assets/fleet/2021_bmw_m4_competition.glb" },
+            { name: "Land Cruiser 300 VX.R", category: "Elite Adventure", power: "304 HP", accel: "6.7s", speed: "210 km/h", file: "assets/fleet/2022_toyota_land_cruiser_300_vx.r.glb" },
+            { name: "BMW M340i xDrive", category: "Sport Sedan", power: "382 HP", accel: "4.1s", speed: "250 km/h", file: "assets/fleet/2020_bmw_m340i_xdrive.glb" },
+            { name: "BMW 3 Series", category: "Luxury Executive", power: "255 HP", accel: "5.6s", speed: "240 km/h", file: "assets/fleet/2023_bmw_3_series.glb" },
+            { name: "Lexus GX 550 Overtrail", category: "Rugged Luxury", power: "349 HP", accel: "6.5s", speed: "175 km/h", file: "assets/fleet/2023_lexus_gx_550_h_overtrail.glb" },
+            { name: "Lexus RX 450h+", category: "Luxury Hybrid", power: "304 HP", accel: "6.5s", speed: "200 km/h", file: "assets/fleet/2023_lexus_rx450h.glb" },
+            { name: "BMW X5 xDrive40i", category: "Luxury SUV", power: "375 HP", accel: "5.3s", speed: "240 km/h", file: "assets/fleet/2024_bmw_x5_xdrive40i.glb" },
+            { name: "Lexus LX 700h", category: "Flagship SUV", power: "457 HP", accel: "6.4s", speed: "210 km/h", file: "assets/fleet/2025_lexus_lx700h.glb" },
+            { name: "Land Cruiser 250", category: "Modern Legend", power: "326 HP", accel: "8.0s", speed: "175 km/h", file: "assets/fleet/2025_toyota_land_cruiser_250.glb" },
+            { name: "BMW M5", category: "Luxury Sedan", power: "600 HP", accel: "3.1s", speed: "250 km/h", file: "assets/fleet/2018_bmw_m5.glb" },
+            { name: "Mercedes C220 w206", category: "Modern Executive", power: "197 HP", accel: "7.3s", speed: "245 km/h", file: "assets/fleet/mercedes-_benz_w206_c220.glb" }
         ];
 
         let currentCarIndex = 0;
+        let mixer; // Animation Mixer
+        const carCache = {}; // Cache for loaded models
+        const clock = new THREE.Clock();
         const showroomWrap = document.getElementById('showroom-canvas-wrap');
         const infoPanel = document.getElementById('showroom-info');
-        const loader = new THREE.GLTFLoader();
         
+        // Loading Manager
+        const manager = new THREE.LoadingManager();
+        const loader = new THREE.GLTFLoader(manager);
+        
+        manager.onProgress = (url, itemsLoaded, itemsTotal) => {
+            const progress = (itemsLoaded / itemsTotal * 100);
+            document.getElementById('loading-bar').style.width = progress + '%';
+            document.getElementById('loading-text').innerText = `Loading: ${Math.round(progress)}%`;
+        };
+
+        manager.onLoad = () => {
+            setTimeout(() => {
+                gsap.to('#loading-screen', { opacity: 0, duration: 0.8, onComplete: () => {
+                    document.getElementById('loading-screen').style.display = 'none';
+                }});
+            }, 500);
+        };
+
         // Scene Setup
         const showroomScene = new THREE.Scene();
         showroomScene.fog = new THREE.FogExp2(0x060606, 0.035);
 
         const showroomCamera = new THREE.PerspectiveCamera(40, showroomWrap.clientWidth / showroomWrap.clientHeight, 0.1, 1000);
-        showroomCamera.position.set(0, 2.5, 12);
+        showroomCamera.position.set(0, 2.8, 14);
         showroomCamera.lookAt(0, 0.8, 0);
 
         const showroomRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        showroomRenderer.setPixelRatio(window.devicePixelRatio);
+        showroomRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Performance cap
         showroomRenderer.setSize(showroomWrap.clientWidth, showroomWrap.clientHeight);
         showroomRenderer.toneMapping = THREE.ACESFilmicToneMapping;
         showroomRenderer.toneMappingExposure = 1.2;
@@ -1098,62 +1177,24 @@
         showroomRenderer.shadowMap.enabled = true;
         showroomWrap.appendChild(showroomRenderer.domElement);
 
-        // Lighting (6 Lights)
-        const ambient = new THREE.AmbientLight(0xffffff, 0.35);
+        // Lighting
+        const ambient = new THREE.AmbientLight(0xffffff, 0.4);
         showroomScene.add(ambient);
 
-        const keyLight = new THREE.DirectionalLight(0xfff5e0, 2.2);
-        keyLight.position.set(8, 12, 8);
-        keyLight.castShadow = true;
-        showroomScene.add(keyLight);
-
-        const fillLight = new THREE.DirectionalLight(0xc0d8ff, 0.8);
-        fillLight.position.set(-8, 4, -4);
-        showroomScene.add(fillLight);
-
-        const rimLight = new THREE.PointLight(0xC9A84C, 2.5, 20);
-        rimLight.position.set(0, 4, -5);
-        showroomScene.add(rimLight);
-
-        const spotLight = new THREE.SpotLight(0xfff8e1, 3);
-        spotLight.position.set(0, 14, 4);
-        spotLight.angle = Math.PI * 0.22;
+        const spotLight = new THREE.SpotLight(0xffffff, 5);
+        spotLight.position.set(0, 15, 0);
+        spotLight.angle = Math.PI / 4;
+        spotLight.penumbra = 0.5;
         spotLight.castShadow = true;
         showroomScene.add(spotLight);
 
-        const topLight = new THREE.DirectionalLight(0xffffff, 0.5);
-        topLight.position.set(0, 10, 0);
-        showroomScene.add(topLight);
-
-        // Environment (Redundant with new model, keeping only for lighting/floor plane if needed)
-        /*
-        const floorGeo = new THREE.PlaneGeometry(30,30);
-        const floorMat = new THREE.MeshStandardMaterial({ color: 0x080808, roughness: 0.05, metalness: 0.9 });
-        const floor = new THREE.Mesh(floorGeo, floorMat);
-        floor.rotation.x = -Math.PI / 2;
-        floor.receiveShadow = true;
-        showroomScene.add(floor);
-
-        const grid = new THREE.GridHelper(24, 24, 0x1a1507, 0x1a1507);
-        grid.position.y = 0.01;
-        showroomScene.add(grid);
-
-        const backWallGeo = new THREE.PlaneGeometry(28, 12);
-        const backWallMat = new THREE.MeshStandardMaterial({ color: 0x050505 });
-        const backWall = new THREE.Mesh(backWallGeo, backWallMat);
-        backWall.position.set(0, 6, -10);
-        showroomScene.add(backWall);
-
-        const logoPlaneGeo = new THREE.PlaneGeometry(6, 0.8);
-        const logoPlaneMat = new THREE.MeshBasicMaterial({ color: 0xC9A84C });
-        const logoPlane = new THREE.Mesh(logoPlaneGeo, logoPlaneMat);
-        logoPlane.position.set(0, 6.5, -9.8);
-        showroomScene.add(logoPlane);
-        */
+        const rimLight = new THREE.PointLight(0xC9A84C, 3, 20);
+        rimLight.position.set(0, 5, -10);
+        showroomScene.add(rimLight);
 
         // Particles
         const partGeo = new THREE.BufferGeometry();
-        const partCount = 200;
+        const partCount = 150;
         const pos = new Float32Array(partCount * 3);
         const velocities = [];
         for(let i=0; i<partCount * 3; i++) {
@@ -1161,30 +1202,26 @@
             velocities.push((Math.random() - 0.5) * 0.01);
         }
         partGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-        const partMat = new THREE.PointsMaterial({ color: 0xC9A84C, size: 0.04, opacity: 0.35, transparent: true });
+        const partMat = new THREE.PointsMaterial({ color: 0xC9A84C, size: 0.03, opacity: 0.3, transparent: true });
         const particles = new THREE.Points(partGeo, partMat);
         showroomScene.add(particles);
 
         // Environment Model
-        console.log("Loading environment...");
         loader.load('assets/Showroom/car-showroom_1.glb', (gltf) => {
-            console.log("Environment loaded successfully");
             const env = gltf.scene;
             env.traverse(node => {
                 if (node.isMesh) {
                     node.receiveShadow = true;
                     if (node.name.toLowerCase().includes('glass')) {
                         node.material.transparent = true;
-                        node.material.opacity = 0.3;
+                        node.material.opacity = 0.2;
                     }
                 }
             });
             showroomScene.add(env);
-        }, undefined, (error) => {
-            console.error("Environment load error:", error);
         });
 
-        // Loader & Car Management
+        // Car Management
         let currentCarGroup = new THREE.Group();
         showroomScene.add(currentCarGroup);
 
@@ -1200,13 +1237,10 @@
             if (index === currentCarIndex) return;
             const direction = index > currentCarIndex ? 1 : -1;
             
-            // Fade out info
             gsap.to(infoPanel, { opacity: 0, duration: 0.2 });
-
-            // Slide current car out
             gsap.to(currentCarGroup.position, { 
                 x: -15 * direction, 
-                duration: 0.35, 
+                duration: 0.4, 
                 ease: "power2.inOut",
                 onComplete: () => {
                     loadCarModel(index, direction);
@@ -1214,70 +1248,100 @@
             });
         }
 
+        function updateCarUI(index) {
+            // Update UI
+            document.getElementById('car-name').innerText = carData[index].name;
+            document.getElementById('car-category').innerText = carData[index].category;
+            document.getElementById('car-power').innerText = carData[index].power;
+            document.getElementById('car-accel').innerText = carData[index].accel;
+            document.getElementById('car-speed').innerText = carData[index].speed;
+
+            // Update Quotes
+            const carName = carData[index].name;
+            const whatsappMsg = encodeURIComponent(`Hello VELOX DRIVE, I am interested in a quote for the ${carName}. Please provide availability and terms.`);
+            document.getElementById('quote-whatsapp').href = `https://wa.me/254700000000?text=${whatsappMsg}`;
+            document.getElementById('quote-email').href = `mailto:concierge@carclan.co.ke?subject=Quote Inquiry: ${carName}&body=I would like to receive a quote for the ${carName}.`;
+
+            document.querySelectorAll('.dot').forEach((d, i) => {
+                d.classList.toggle('active', i === index);
+            });
+            
+            gsap.to(infoPanel, { opacity: 1, duration: 0.4 });
+        }
+
         function loadCarModel(index, direction) {
-            // Clear current models
+            updateCarUI(index);
+            
+            // Memory Management: Dispose of previous car
             while(currentCarGroup.children.length > 0) {
-                currentCarGroup.remove(currentCarGroup.children[0]);
+                const child = currentCarGroup.children[0];
+                currentCarGroup.remove(child);
+                child.traverse(node => {
+                    if (node.isMesh) {
+                        node.geometry.dispose();
+                        if (Array.isArray(node.material)) {
+                            node.material.forEach(m => m.dispose());
+                        } else {
+                            node.material.dispose();
+                        }
+                    }
+                });
             }
-            
+            if (mixer) mixer = null;
+
             currentCarIndex = index;
-            
-            // Move group to starting position for entrance
             currentCarGroup.position.x = 15 * direction;
 
-            console.log(`Loading car: ${carData[index].file}`);
+            // Cache Check
+            if (carCache[index]) {
+                const cachedModel = carCache[index];
+                currentCarGroup.add(cachedModel);
+                gsap.to(currentCarGroup.position, { x: 0, duration: 0.5, ease: "power3.out" });
+                return;
+            }
+
             loader.load(carData[index].file, (gltf) => {
-                console.log("Car loaded successfully");
                 const model = gltf.scene;
                 
-                const box = new THREE.Box3().setFromObject(model);
-                const size = box.getSize(new THREE.Vector3());
-                const center = box.getCenter(new THREE.Vector3());
-                
-                model.position.x = -center.x;
-                model.position.y = -box.min.y;
-                model.position.z = -center.z;
-                
+                // Retain Original Colors & Materials
                 model.traverse(node => {
                     if (node.isMesh) {
                         node.castShadow = true;
                         node.receiveShadow = true;
-                        if (node.material) {
-                            node.material.depthWrite = true;
-                            node.material.needsUpdate = true;
-                        }
                     }
                 });
 
-                currentCarGroup.add(model);
-
-                // Update UI content
-                document.getElementById('car-name').innerText = carData[index].name;
-                document.getElementById('car-category').innerText = carData[index].category;
-                document.getElementById('car-power').innerText = carData[index].power;
-                document.getElementById('car-accel').innerText = carData[index].accel;
-                document.getElementById('car-speed').innerText = carData[index].speed;
-                document.getElementById('car-price').innerText = carData[index].price;
-
-                document.querySelectorAll('.dot').forEach((d, i) => {
-                    d.classList.toggle('active', i === index);
-                });
-
-                gsap.to(currentCarGroup.position, { x: 0, duration: 0.35, ease: "power2.out" });
-                gsap.to(infoPanel, { opacity: 1, duration: 0.3, delay: 0.1 });
-            }, (xhr) => {
-                if (xhr.total > 0) {
-                    console.log((xhr.loaded / xhr.total * 100).toFixed(1) + '% loaded');
+                // Handle Animations
+                if (gltf.animations && gltf.animations.length > 0) {
+                    model.userData.animations = gltf.animations; // Store for mixer
                 }
-            }, (error) => {
-                console.error("Car load error:", error);
+
+                // Centering
+                const box = new THREE.Box3().setFromObject(model);
+                const center = box.getCenter(new THREE.Vector3());
+                model.position.x = -center.x;
+                model.position.y = -box.min.y;
+                model.position.z = -center.z;
+                
+                // Cache it
+                carCache[index] = model;
+
+                currentCarGroup.add(model);
+                gsap.to(currentCarGroup.position, { x: 0, duration: 0.5, ease: "power3.out" });
+
+                // If this is the current car, update mixer
+                if (currentCarIndex === index && model.userData.animations) {
+                    mixer = new THREE.AnimationMixer(model);
+                    model.userData.animations.forEach(clip => {
+                        mixer.clipAction(clip).play();
+                    });
+                }
             });
         }
 
         // Initial Load
         loadCarModel(0, 1);
 
-        // Buttons
         document.getElementById('btn-prev').onclick = () => {
             let next = currentCarIndex - 1;
             if (next < 0) next = carData.length - 1;
@@ -1288,26 +1352,27 @@
             switchCar(next);
         };
 
-        // Keyboard Navigation
         window.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowLeft') document.getElementById('btn-prev').click();
             if (e.key === 'ArrowRight') document.getElementById('btn-next').click();
         });
 
-        // Loop
         function showroomAnimate() {
             requestAnimationFrame(showroomAnimate);
+            const delta = clock.getDelta();
             
+            if (mixer) mixer.update(delta);
+
             // Particles drift
             const positions = particles.geometry.attributes.position.array;
             for(let i=0; i<partCount * 3; i++) {
-                positions[i] += Math.sin(Date.now() * 0.001 + i) * 0.002;
+                positions[i] += Math.sin(Date.now() * 0.0005 + i) * 0.0015;
             }
             particles.geometry.attributes.position.needsUpdate = true;
             
-            // Subtle rotation on group
+            // Subtle rotation
             if(currentCarGroup.children.length > 0) {
-                currentCarGroup.rotation.y += 0.002;
+                currentCarGroup.rotation.y += 0.001;
             }
 
             showroomRenderer.render(showroomScene, showroomCamera);
