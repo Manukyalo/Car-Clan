@@ -54,28 +54,27 @@
             z-index: 9999;
         }
 
-        /* Custom Cursor */
-        #cursor {
+        /* Custom Cursor Refined */
+        #cursor-dot {
             position: fixed;
-            width: 20px;
-            height: 20px;
+            width: 10px;
+            height: 10px;
             background: var(--gold);
             border-radius: 50%;
             pointer-events: none;
             z-index: 10000;
             mix-blend-mode: difference;
-            transition: transform 0.1s ease-out;
         }
 
-        #cursor-follower {
+        #cursor-ring {
             position: fixed;
-            width: 40px;
-            height: 40px;
+            width: 34px;
+            height: 34px;
             border: 1px solid var(--gold);
             border-radius: 50%;
             pointer-events: none;
             z-index: 10000;
-            transition: transform 0.15s ease-out;
+            mix-blend-mode: difference;
         }
 
         /* Typography & Layout Utilities */
@@ -100,43 +99,94 @@
             justify-content: center;
         }
 
-        /* Navigation */
+        /* Navigation Refined */
         nav {
             position: fixed;
             top: 0;
             width: 100%;
-            padding: 30px 10%;
+            padding: 25px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
+            z-index: 500;
+            transition: all 0.4s ease;
+            background: linear-gradient(to bottom, rgba(6,6,6,0.92), transparent);
+        }
+
+        nav.scrolled {
+            background: rgba(6,6,6,0.96);
+            border-bottom: 1px solid rgba(201,168,76,0.2);
+            padding: 15px 5%;
         }
 
         .logo {
             font-family: var(--font-display);
-            font-size: 2rem;
-            color: var(--gold);
+            font-size: 1.8rem;
             text-decoration: none;
+            letter-spacing: 1px;
         }
+
+        .logo span.car { color: var(--gold); }
+        .logo span.clan { color: #F0EDE8; }
 
         .nav-links {
             display: flex;
-            gap: 40px;
+            gap: 30px;
+            align-items: center;
         }
 
         .nav-links a {
-            font-family: var(--font-label);
-            color: var(--white);
+            font-family: 'Syne', sans-serif;
+            color: #5A5652;
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: 10px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 3px;
             transition: color 0.3s;
         }
 
         .nav-links a:hover {
             color: var(--gold);
+        }
+
+        /* Book Now Button */
+        .btn-book {
+            position: relative;
+            padding: 12px 25px;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            font-family: 'Syne', sans-serif;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            overflow: hidden;
+            background: transparent;
+            z-index: 1;
+            transition: color 0.4s;
+        }
+
+        .btn-book::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--gold);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            z-index: -1;
+        }
+
+        .btn-book:hover {
+            color: #000;
+        }
+
+        .btn-book:hover::before {
+            transform: scaleX(1);
+            transform-origin: left;
         }
 
         /* Smooth Scroll Smoothing */
@@ -321,10 +371,10 @@
             font-family: var(--font-body);
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
+        /* Responsive Refined */
+        @media (max-width: 960px) {
             .nav-links { display: none; }
-            section { padding: 80px 5%; }
+            nav { padding: 20px 5%; }
             .hero h1 { font-size: 4rem; }
             .chatbot-container { width: 90%; right: 5%; }
         }
@@ -333,17 +383,20 @@
 <body>
 
     <div class="grain-overlay"></div>
-    <div id="cursor"></div>
-    <div id="cursor-follower"></div>
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"></div>
 
-    <nav>
-        <a href="#" class="logo">CAR CLAN</a>
+    <nav id="navbar">
+        <a href="#" class="logo">
+            <span class="car">CAR</span> <span class="clan">CLAN</span>
+        </a>
         <div class="nav-links">
             <a href="#showroom">Showroom</a>
             <a href="#fleet">Fleet</a>
             <a href="#features">Features</a>
             <a href="#contact">Contact</a>
         </div>
+        <a href="#contact" class="btn-book">Book Now</a>
     </nav>
 
     <main>
@@ -470,22 +523,42 @@
             const chat = document.getElementById('chatbot');
             chat.style.display = chat.style.display === 'flex' ? 'none' : 'flex';
         }
-        // Custom Cursor Logic
-        const cursor = document.getElementById('cursor');
-        const follower = document.getElementById('cursor-follower');
+        // Scroll Listener for Navbar
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 60) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Refined Custom Cursor with Lerp
+        const dot = document.getElementById('cursor-dot');
+        const ring = document.getElementById('cursor-ring');
+
+        let mouseX = 0, mouseY = 0;
+        let ringX = 0, ringY = 0;
+        const lerpFactor = 0.12;
 
         document.addEventListener('mousemove', (e) => {
-            gsap.to(cursor, {
-                x: e.clientX - 10,
-                y: e.clientY - 10,
-                duration: 0.1
-            });
-            gsap.to(follower, {
-                x: e.clientX - 20,
-                y: e.clientY - 20,
-                duration: 0.3
-            });
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            // Dot follows exactly
+            gsap.set(dot, { x: mouseX - 5, y: mouseY - 5 });
         });
+
+        function updateCursor() {
+            // Lerp Ring
+            ringX += (mouseX - ringX) * lerpFactor;
+            ringY += (mouseY - ringY) * lerpFactor;
+
+            gsap.set(ring, { x: ringX - 17, y: ringY - 17 });
+            
+            requestAnimationFrame(updateCursor);
+        }
+        updateCursor();
 
         // Register ScrollTrigger
         gsap.registerPlugin(ScrollTrigger);
