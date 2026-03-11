@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Clan | Premium Luxury Car Rental Nairobi</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Syne:wght@400..800&display=swap" rel="stylesheet">
+    
+    <!-- CDNs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+        :root {
+            --bg-color: #060606;
+            --gold: #C9A84C;
+            --red: #E8312A;
+            --white: #F5F5F5;
+            --gray: #2A2A2A;
+            --font-display: 'Bebas Neue', sans-serif;
+            --font-body: 'Syne', sans-serif;
+            --font-label: 'DM Mono', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: none; /* Hide default cursor */
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--white);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Grain Noise Overlay */
+        .grain-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://grainy-gradients.vercel.app/noise.svg');
+            opacity: 0.05;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* Custom Cursor */
+        #cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            background: var(--gold);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            mix-blend-mode: difference;
+            transition: transform 0.1s ease-out;
+        }
+
+        #cursor-follower {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--gold);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10000;
+            transition: transform 0.15s ease-out;
+        }
+
+        /* Typography & Layout Utilities */
+        h1, h2, h3 {
+            font-family: var(--font-display);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .label {
+            font-family: var(--font-label);
+            font-size: 0.8rem;
+            color: var(--gold);
+            text-transform: uppercase;
+        }
+
+        section {
+            padding: 100px 10%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 30px 10%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            color: var(--gold);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 40px;
+        }
+
+        .nav-links a {
+            font-family: var(--font-label);
+            color: var(--white);
+            text-decoration: none;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--gold);
+        }
+
+        /* Smooth Scroll Smoothing */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Fleet Section */
+        .fleet {
+            background: #0a0a0a;
+        }
+
+        .fleet-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .car-card {
+            background: var(--gray);
+            padding: 30px;
+            border: 1px solid rgba(201, 168, 76, 0.1);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .car-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-10px);
+        }
+
+        .car-card h3 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .car-price {
+            font-family: var(--font-label);
+            color: var(--gold);
+            font-size: 1.2rem;
+        }
+
+        /* Features Section */
+        .features {
+            background: #060606;
+            text-align: center;
+        }
+
+        .payment-logos {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 50px;
+            filter: grayscale(1) invert(1);
+            opacity: 0.6;
+            transition: 0.3s;
+        }
+
+        .payment-logos img {
+            height: 60px;
+            object-fit: contain;
+        }
+
+        .payment-logos:hover {
+            filter: grayscale(0) invert(0);
+            opacity: 1;
+        }
+
+        /* Testimonials */
+        .testimonials {
+            background: #0a0a0a;
+        }
+
+        .testimonial-slider {
+            max-width: 800px;
+            margin: 50px auto;
+            font-size: 1.5rem;
+            font-style: italic;
+            text-align: center;
+        }
+
+        /* Footer */
+        footer {
+            padding: 80px 10%;
+            background: #000;
+            border-top: 1px solid var(--gray);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 50px;
+        }
+
+        footer h4 {
+            font-family: var(--font-display);
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+
+        footer ul {
+            list-style: none;
+        }
+
+        footer ul li {
+            margin-bottom: 10px;
+        }
+
+        footer ul li a {
+            color: #888;
+            text-decoration: none;
+            font-family: var(--font-label);
+            transition: color 0.3s;
+        }
+
+        footer ul li a:hover {
+            color: var(--white);
+        }
+
+        /* Chatbot Widget Enhancement */
+        .chatbot-container {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 350px;
+            height: 450px;
+            background: #111;
+            border: 1px solid var(--gray);
+            border-radius: 20px;
+            display: none;
+            flex-direction: column;
+            z-index: 1001;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            overflow: hidden;
+            animation: slideUp 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .chatbot-header {
+            background: var(--gold);
+            padding: 20px;
+            color: #000;
+            font-family: var(--font-display);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chatbot-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+            font-family: var(--font-label);
+        }
+
+        .chat-msg {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+
+        .chat-msg.bot { background: var(--gray); align-self: flex-start; }
+        .chat-msg.user { background: var(--gold); color: #000; align-self: flex-end; margin-left: auto; }
+
+        .chatbot-input {
+            padding: 15px;
+            border-top: 1px solid var(--gray);
+            display: flex;
+        }
+
+        .chatbot-input input {
+            background: none;
+            border: none;
+            color: white;
+            flex: 1;
+            outline: none;
+            font-family: var(--font-body);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            section { padding: 80px 5%; }
+            .hero h1 { font-size: 4rem; }
+            .chatbot-container { width: 90%; right: 5%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="grain-overlay"></div>
+    <div id="cursor"></div>
+    <div id="cursor-follower"></div>
+
+    <nav>
+        <a href="#" class="logo">CAR CLAN</a>
+        <div class="nav-links">
+            <a href="#showroom">Showroom</a>
+            <a href="#fleet">Fleet</a>
+            <a href="#features">Features</a>
+            <a href="#contact">Contact</a>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <span class="label">Nairobi Elite Service</span>
+            <h1>Car Clan</h1>
+            <p>Experience the pinnacle of luxury mobility in Kenya. Exclusive rentals for those who demand excellence.</p>
+        </section>
+
+        <!-- Showroom Section -->
+        <section id="showroom" class="showroom">
+            <div class="label">3D Showroom</div>
+            <h2>Interactive Fleet</h2>
+            <div id="webgl-container" style="width: 100%; height: 500px; cursor: grab;"></div>
+        </section>
+
+        <!-- Fleet Intro -->
+        <section id="fleet" class="fleet">
+            <div class="label">The Collection</div>
+            <h2>Our Fleet</h2>
+            <div class="fleet-grid">
+                <div class="car-card">
+                    <span class="label">SUV</span>
+                    <h3>Range Rover Autobiography</h3>
+                    <p class="car-price">KES 120,000 / Day</p>
+                </div>
+                <div class="car-card">
+                    <span class="label">Luxury Sedan</span>
+                    <h3>Mercedes S-Class</h3>
+                    <p class="car-price">KES 95,000 / Day</p>
+                </div>
+                <div class="car-card">
+                    <span class="label">Off-Road</span>
+                    <h3>Toyota Land Cruiser V8</h3>
+                    <p class="car-price">KES 45,000 / Day</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features & Payments -->
+        <section id="features" class="features">
+            <div class="label">Seamless Experience</div>
+            <h2>Premium Features</h2>
+            <div class="payment-logos">
+                <!-- Using placeholders for Mpesa/Pesapal logos -->
+                <img src="https://upload.wikimedia.org/wikipedia/commons/1/15/M-PESA_LOGO-01.svg" alt="M-Pesa">
+                <img src="https://www.pesapal.com/assets/img/pesapal-logo.png" alt="Pesapal" style="filter: invert(1);">
+            </div>
+            <p style="margin-top: 30px; font-family: var(--font-label);">Secure Instant Payments via M-Pesa & Pesapal</p>
+        </section>
+
+        <!-- How It Works -->
+        <section id="how-it-works" class="how-it-works">
+            <div class="label">Process</div>
+            <h2>How It Works</h2>
+            <div style="margin-top: 50px;">
+                <div style="margin-bottom: 30px;">
+                    <h3 style="color: var(--gold);">01. Selection</h3>
+                    <p>Choose your preferred masterpiece from our elite collection.</p>
+                </div>
+                <div style="margin-bottom: 30px;">
+                    <h3 style="color: var(--gold);">02. Verification</h3>
+                    <p>Fast and discreet document verification process.</p>
+                </div>
+                <div style="margin-bottom: 30px;">
+                    <h3 style="color: var(--gold);">03. Delivery</h3>
+                    <p>Chauffeur-driven or self-drive delivery to your doorstep.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section class="testimonials">
+            <div class="label">Client Stories</div>
+            <div class="testimonial-slider">
+                "The most professional luxury car rental service in Nairobi. The S-Class was pristine and the service impeccable."
+                <div class="label" style="margin-top: 20px;">— David K., CEO</div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div>
+            <a href="#" class="logo">CAR CLAN</a>
+            <p style="margin-top: 20px; color: #666; font-size: 0.9rem;">Elevating the standard of luxury car rentals in Kenya.</p>
+        </div>
+        <div>
+            <h4>Contact</h4>
+            <ul>
+                <li><a href="#">Westlands, Nairobi</a></li>
+                <li><a href="#">+254 700 000 000</a></li>
+                <li><a href="#">concierge@carclan.co.ke</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4>Follow Us</h4>
+            <ul>
+                <li><a href="#">Instagram</a></li>
+                <li><a href="#">LinkedIn</a></li>
+                <li><a href="#">Twitter</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <div class="chatbot-container" id="chatbot">
+        <div class="chatbot-header">
+            <span>Clan Concierge AI</span>
+            <span style="cursor: pointer;" onclick="toggleChat()">✕</span>
+        </div>
+        <div class="chatbot-messages">
+            <div class="chat-msg bot">Welcome to Car Clan. How can I assist you with your luxury booking today?</div>
+        </div>
+        <div class="chatbot-input">
+            <input type="text" placeholder="Ask about our fleet...">
+        </div>
+    </div>
+
+    <div class="chatbot-trigger" onclick="toggleChat()">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 1.821.487 3.53 1.338 5L2 22l5-1.338c1.47.851 3.179 1.338 5 1.338 5.523 0 10-4.477 10-10S17.523 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
+    </div>
+
+    <script>
+        function toggleChat() {
+            const chat = document.getElementById('chatbot');
+            chat.style.display = chat.style.display === 'flex' ? 'none' : 'flex';
+        }
+        // Custom Cursor Logic
+        const cursor = document.getElementById('cursor');
+        const follower = document.getElementById('cursor-follower');
+
+        document.addEventListener('mousemove', (e) => {
+            gsap.to(cursor, {
+                x: e.clientX - 10,
+                y: e.clientY - 10,
+                duration: 0.1
+            });
+            gsap.to(follower, {
+                x: e.clientX - 20,
+                y: e.clientY - 20,
+                duration: 0.3
+            });
+        });
+
+        // Register ScrollTrigger
+        gsap.registerPlugin(ScrollTrigger);
+
+        // GSAP Reveal Animations
+        gsap.from(".hero h1", {
+            y: 100, opacity: 0, duration: 1.5, ease: "power4.out"
+        });
+
+        gsap.utils.toArray('section').forEach(section => {
+            gsap.from(section.querySelectorAll('.label, h2, p, .car-card'), {
+                scrollTrigger: {
+                    trigger: section,
+                    start: "top 80%",
+                },
+                y: 50,
+                opacity: 0,
+                duration: 1,
+                stagger: 0.2,
+                ease: "power3.out"
+            });
+        });
+
+        // Three.js Showroom
+        const container = document.getElementById('webgl-container');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        container.appendChild(renderer.domElement);
+
+        // Placeholder 3D Geometry (Stylized Crystal/Diamond representing luxury)
+        const geometry = new THREE.IcosahedronGeometry(2, 0);
+        const material = new THREE.MeshPhysicalMaterial({
+            color: 0xC9A84C,
+            metalness: 0.9,
+            roughness: 0.1,
+            transparent: true,
+            opacity: 0.8,
+            transmission: 0.5,
+            thickness: 1
+        });
+        const mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+
+        // Lights
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+        const pointLight = new THREE.PointLight(0xE8312A, 2);
+        pointLight.position.set(5, 5, 5);
+        scene.add(pointLight);
+
+        camera.position.z = 5;
+
+        // Animation Loop
+        function animate() {
+            requestAnimationFrame(animate);
+            mesh.rotation.x += 0.005;
+            mesh.rotation.y += 0.005;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Scroll Integration with Three.js
+        gsap.to(mesh.rotation, {
+            scrollTrigger: {
+                trigger: "#showroom",
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 1
+            },
+            y: Math.PI * 2,
+            z: Math.PI
+        });
+
+        window.addEventListener('resize', () => {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        });
+    </script>
+</body>
+</html>
