@@ -1039,7 +1039,7 @@
                 accel: "2.9s",
                 speed: "305 km/h",
                 price: "KES 145,000",
-                file: "assets/Car fleet/bmw_m5_cs.glb",
+                file: "assets/fleet/bmw_m5_cs.glb",
                 color: 0x1a1a1a
             },
             {
@@ -1049,7 +1049,7 @@
                 accel: "2.7s",
                 speed: "330 km/h",
                 price: "KES 160,000",
-                file: "assets/Car fleet/2022_porsche_911_trubo_s.glb",
+                file: "assets/fleet/2022_porsche_911_trubo_s.glb",
                 color: 0x222222
             },
             {
@@ -1059,7 +1059,7 @@
                 accel: "4.5s",
                 speed: "220 km/h",
                 price: "KES 110,000",
-                file: "assets/Car fleet/2025_mercedes-benz_g-class_amg_g_63.glb",
+                file: "assets/fleet/2025_mercedes-benz_g-class_amg_g_63.glb",
                 color: 0x0a0a0a
             },
             {
@@ -1069,7 +1069,7 @@
                 accel: "6.7s",
                 speed: "210 km/h",
                 price: "KES 55,000",
-                file: "assets/Car fleet/2022_toyota_land_cruiser_300_vx.r.glb",
+                file: "assets/fleet/2022_toyota_land_cruiser_300_vx.r.glb",
                 color: 0xffffff
             }
         ];
@@ -1162,13 +1162,13 @@
         showroomScene.add(particles);
 
         // Environment Model
+        console.log("Loading environment...");
         loader.load('assets/Showroom/my_car_in_a_showroom.glb', (gltf) => {
+            console.log("Environment loaded successfully");
             const env = gltf.scene;
-            // Center and scale environment if needed
             env.traverse(node => {
                 if (node.isMesh) {
                     node.receiveShadow = true;
-                    // Lower opacity of walls if they block the view
                     if (node.name.toLowerCase().includes('glass')) {
                         node.material.transparent = true;
                         node.material.opacity = 0.3;
@@ -1176,6 +1176,8 @@
                 }
             });
             showroomScene.add(env);
+        }, undefined, (error) => {
+            console.error("Environment load error:", error);
         });
 
         // Loader & Car Management
@@ -1219,10 +1221,11 @@
             // Move group to starting position for entrance
             currentCarGroup.position.x = 15 * direction;
 
+            console.log(`Loading car: ${carData[index].file}`);
             loader.load(carData[index].file, (gltf) => {
+                console.log("Car loaded successfully");
                 const model = gltf.scene;
                 
-                // Scale and center correction
                 const box = new THREE.Box3().setFromObject(model);
                 const size = box.getSize(new THREE.Vector3());
                 const center = box.getCenter(new THREE.Vector3());
@@ -1235,6 +1238,10 @@
                     if (node.isMesh) {
                         node.castShadow = true;
                         node.receiveShadow = true;
+                        if (node.material) {
+                            node.material.depthWrite = true;
+                            node.material.needsUpdate = true;
+                        }
                     }
                 });
 
@@ -1248,15 +1255,16 @@
                 document.getElementById('car-speed').innerText = carData[index].speed;
                 document.getElementById('car-price').innerText = carData[index].price;
 
-                // Update Dots
                 document.querySelectorAll('.dot').forEach((d, i) => {
                     d.classList.toggle('active', i === index);
                 });
 
-                // Slide next car in
                 gsap.to(currentCarGroup.position, { x: 0, duration: 0.35, ease: "power2.out" });
-                // Fade in info
                 gsap.to(infoPanel, { opacity: 1, duration: 0.3, delay: 0.1 });
+            }, (xhr) => {
+                console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+            }, (error) => {
+                console.error("Car load error:", error);
             });
         }
 
