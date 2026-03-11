@@ -1125,7 +1125,8 @@
         topLight.position.set(0, 10, 0);
         showroomScene.add(topLight);
 
-        // Environment
+        // Environment (Redundant with new model, keeping only for lighting/floor plane if needed)
+        /*
         const floorGeo = new THREE.PlaneGeometry(30,30);
         const floorMat = new THREE.MeshStandardMaterial({ color: 0x080808, roughness: 0.05, metalness: 0.9 });
         const floor = new THREE.Mesh(floorGeo, floorMat);
@@ -1148,6 +1149,7 @@
         const logoPlane = new THREE.Mesh(logoPlaneGeo, logoPlaneMat);
         logoPlane.position.set(0, 6.5, -9.8);
         showroomScene.add(logoPlane);
+        */
 
         // Particles
         const partGeo = new THREE.BufferGeometry();
