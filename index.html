@@ -1088,7 +1088,7 @@
         const showroomWrap = document.getElementById('showroom-canvas-wrap');
         const infoPanel = document.getElementById('showroom-info');
         
-        let PLATFORM_Y_OFFSET = 0.08; // Adjust until cars sit perfectly on the stage
+        let PLATFORM_Y_OFFSET = 0.0; // Adjust with [ and ] keys
         let firstCarLoaded = false;
 
         // Loading Manager
@@ -1123,15 +1123,15 @@
         const showroomScene = new THREE.Scene();
         showroomScene.fog = new THREE.FogExp2(0x060606, 0.035);
 
-        const showroomCamera = new THREE.PerspectiveCamera(40, showroomWrap.clientWidth / showroomWrap.clientHeight, 0.1, 1000);
-        showroomCamera.position.set(0, 2.8, 14);
-        showroomCamera.lookAt(0, 0.8, 0);
+        const showroomCamera = new THREE.PerspectiveCamera(48, showroomWrap.clientWidth / showroomWrap.clientHeight, 0.1, 1000);
+        showroomCamera.position.set(0, 2.8, 11);
+        showroomCamera.lookAt(0, 1.0, 0);
 
         const showroomRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         showroomRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         showroomRenderer.setSize(showroomWrap.clientWidth, showroomWrap.clientHeight);
         showroomRenderer.toneMapping = THREE.ACESFilmicToneMapping;
-        showroomRenderer.toneMappingExposure = 1.2;
+        showroomRenderer.toneMappingExposure = 1.4;
         showroomRenderer.outputEncoding = THREE.sRGBEncoding;
         showroomRenderer.shadowMap.enabled = true;
         showroomRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -1140,18 +1140,23 @@
         showroomWrap.insertBefore(showroomRenderer.domElement, document.getElementById('dot-indicators'));
 
         // Lighting
-        const ambient = new THREE.AmbientLight(0xffffff, 0.4);
+        const ambient = new THREE.AmbientLight(0xffffff, 0.65);
         showroomScene.add(ambient);
 
-        const spotLight = new THREE.SpotLight(0xffffff, 5);
-        spotLight.position.set(0, 15, 0);
+        const spotLight = new THREE.SpotLight(0xffffff, 2.2);
+        spotLight.position.set(6, 9, 10);
         spotLight.angle = Math.PI / 4;
         spotLight.penumbra = 0.5;
         spotLight.castShadow = true;
-        spotLight.shadow.mapSize.set(2048, 2048); // High Quality Shadows
+        spotLight.shadow.mapSize.set(2048, 2048);
         showroomScene.add(spotLight);
 
-        const rimLight = new THREE.PointLight(0xC9A84C, 3, 20);
+        // Add dedicated front-facing fill:
+        const frontFill = new THREE.DirectionalLight(0xfff0e0, 1.1);
+        frontFill.position.set(-5, 5, 10);
+        showroomScene.add(frontFill);
+
+        const rimLight = new THREE.PointLight(0xC9A84C, 1.8, 20);
         rimLight.position.set(0, 5, -10);
         showroomScene.add(rimLight);
 
@@ -1167,27 +1172,40 @@
         const particles = new THREE.Points(partGeo, partMat);
         showroomScene.add(particles);
 
+        let platformSurfaceY = 0;
+        let platformCenterX  = 0;
+        let platformCenterZ  = 0;
+
         // Environment Model
         loader.load('assets/Showroom/car-showroom_1.glb', (gltf) => {
             const env = gltf.scene;
             env.traverse(node => {
                 if (node.isMesh) {
                     node.receiveShadow = true;
-                    if (node.name.toLowerCase().includes('glass')) {
-                        node.material.transparent = true;
-                        node.material.opacity = 0.2;
+                    // Preserve original materials, but handle specific name tags if necessary
+                    const name = node.name.toLowerCase();
+                    const isPlatform = 
+                        name.includes('platform') || name.includes('stage') ||
+                        name.includes('podium')   || name.includes('step')  ||
+                        name.includes('plinth')   || name.includes('base')  ||
+                        name.includes('display');
+                    
+                    if (isPlatform) {
+                        const b = new THREE.Box3().setFromObject(node);
+                        platformSurfaceY = b.max.y;
+                        const c = b.getCenter(new THREE.Vector3());
+                        platformCenterX  = c.x;
+                        platformCenterZ  = c.z;
+                        console.log('Platform found:', node.name, 
+                                    'surfaceY:', platformSurfaceY,
+                                    'center:', platformCenterX, platformCenterZ);
                     }
                 }
             });
             showroomScene.add(env);
-
-            // Attempt to detect platform Y via raycasting
-            const raycaster = new THREE.Raycaster();
-            raycaster.set(new THREE.Vector3(0, 20, 0), new THREE.Vector3(0, -1, 0));
-            const intersects = raycaster.intersectObjects(env.children, true);
-            if (intersects.length > 0) {
-                PLATFORM_Y_OFFSET = intersects[0].point.y;
-            }
+            
+            // Re-position outer group once platform is detected
+            outerGroup.position.set(platformCenterX, 0, platformCenterZ);
         });
 
         // Rotation Logic (Drag-to-Rotate)
@@ -1195,6 +1213,13 @@
         let currentRotY = 0, currentRotX = 0;
         let isDragging = false;
         let previousMouseX = 0, previousMouseY = 0;
+
+        // Nested Groups for Pivot Fix
+        const outerGroup = new THREE.Group();
+        showroomScene.add(outerGroup);
+
+        const innerGroup = new THREE.Group();
+        outerGroup.add(innerGroup);
 
         showroomWrap.addEventListener('mousedown', (e) => {
             isDragging = true;
@@ -1217,7 +1242,7 @@
 
             targetRotY += deltaX * 0.008;
             targetRotX += deltaY * 0.004;
-            targetRotX = Math.max(-0.35, Math.min(0.35, targetRotX));
+            targetRotX = Math.max(-0.25, Math.min(0.25, targetRotX));
         });
 
         // Touch Support
@@ -1240,12 +1265,10 @@
 
             targetRotY += deltaX * 0.008;
             targetRotX += deltaY * 0.004;
-            targetRotX = Math.max(-0.35, Math.min(0.35, targetRotX));
+            targetRotX = Math.max(-0.25, Math.min(0.25, targetRotX));
         }, { passive: true });
 
         // Car Management
-        let currentCarGroup = new THREE.Group();
-        showroomScene.add(currentCarGroup);
 
         const dotsContainer = document.getElementById('dot-indicators');
         carData.forEach((_, i) => {
@@ -1260,8 +1283,8 @@
             const direction = index > currentCarIndex ? 1 : -1;
             
             gsap.to(infoPanel, { opacity: 0, duration: 0.2 });
-            gsap.to(currentCarGroup.position, { 
-                x: -15 * direction, 
+            gsap.to(outerGroup.position, { 
+                x: platformCenterX - (15 * direction), 
                 duration: 0.4, 
                 ease: "power2.inOut",
                 onComplete: () => {
@@ -1293,38 +1316,34 @@
             updateCarUI(index);
             
             // Memory Management
-            while(currentCarGroup.children.length > 0) {
-                const child = currentCarGroup.children[0];
-                currentCarGroup.remove(child);
+            while(innerGroup.children.length > 0) {
+                const child = innerGroup.children[0];
+                innerGroup.remove(child);
             }
             if (mixer) mixer = null;
 
             // Reset Rotation
             targetRotY = targetRotX = currentRotY = currentRotX = 0;
-            currentCarGroup.rotation.set(0, 0, 0);
+            innerGroup.rotation.set(0, 0, 0);
 
             currentCarIndex = index;
-            currentCarGroup.position.x = 15 * direction;
+            outerGroup.position.set(platformCenterX + (15 * direction), 0, platformCenterZ);
 
             // Cache Check
             if (carCache[index]) {
-                const model = carCache[index].clone(true);
-                // Also clone animations if they exist
-                if (carCache[index].userData.animations) {
-                    model.userData.animations = carCache[index].userData.animations;
-                }
-                currentCarGroup.add(model);
+                const model = carCache[index]; 
+                innerGroup.add(model);
                 
                 if (model.userData.animations) {
                     mixer = new THREE.AnimationMixer(model);
                     model.userData.animations.forEach(clip => {
                         const action = mixer.clipAction(clip);
                         action.play();
-                        action.paused = true; // Stay paused as requested
+                        action.paused = true;
                     });
                 }
 
-                gsap.to(currentCarGroup.position, { x: 0, duration: 0.5, ease: "power3.out" });
+                gsap.to(outerGroup.position, { x: platformCenterX, duration: 0.5, ease: "power3.out" });
                 return;
             }
 
@@ -1338,42 +1357,36 @@
                     }
                 });
 
-                // Normalizing Scale
-                const box = new THREE.Box3().setFromObject(model);
-                const size = box.getSize(new THREE.Vector3());
-                const maxDim = Math.max(size.x, size.y, size.z);
-                const TARGET_SIZE = 4.5;
-                const scaleFactor = TARGET_SIZE / maxDim;
+                // 1. Scale based on horizontal axis only
+                const initialBox = new THREE.Box3().setFromObject(model);
+                const initialSize = initialBox.getSize(new THREE.Vector3());
+                const horizontalMax = Math.max(initialSize.x, initialSize.z);
+                const TARGET_SIZE = 3.8;
+                const scaleFactor = TARGET_SIZE / horizontalMax;
                 model.scale.setScalar(scaleFactor);
 
-                // Centering & Flooring
-                const box2 = new THREE.Box3().setFromObject(model);
-                const center2 = box2.getCenter(new THREE.Vector3());
-                model.position.x = -center2.x;
-                model.position.y = -box2.min.y + PLATFORM_Y_OFFSET;
-                model.position.z = -center2.z;
+                // 2. Recompute box after scaling
+                const carBox = new THREE.Box3().setFromObject(model);
+                const center = carBox.getCenter(new THREE.Vector3());
+
+                // 3. Center X and Z, set Y to platform surface
+                model.position.set(-center.x, (platformSurfaceY + PLATFORM_Y_OFFSET) - carBox.min.y, -center.z);
 
                 if (gltf.animations && gltf.animations.length > 0) {
                     model.userData.animations = gltf.animations;
                 }
 
-                // Cache original
                 carCache[index] = model;
+                innerGroup.add(model);
+                
+                gsap.to(outerGroup.position, { x: platformCenterX, duration: 0.5, ease: "power3.out" });
 
-                const displayModel = model.clone(true);
                 if (model.userData.animations) {
-                    displayModel.userData.animations = model.userData.animations;
-                }
-
-                currentCarGroup.add(displayModel);
-                gsap.to(currentCarGroup.position, { x: 0, duration: 0.5, ease: "power3.out" });
-
-                if (displayModel.userData.animations) {
-                    mixer = new THREE.AnimationMixer(displayModel);
-                    displayModel.userData.animations.forEach(clip => {
+                    mixer = new THREE.AnimationMixer(model);
+                    model.userData.animations.forEach(clip => {
                         const action = mixer.clipAction(clip);
                         action.play();
-                        action.paused = true; // Stay paused
+                        action.paused = true;
                     });
                 }
 
@@ -1400,6 +1413,18 @@
         window.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowLeft') document.getElementById('btn-prev').click();
             if (e.key === 'ArrowRight') document.getElementById('btn-next').click();
+
+            // Debug Platform Tuning
+            if (e.key === '[') PLATFORM_Y_OFFSET -= 0.05;
+            if (e.key === ']') PLATFORM_Y_OFFSET += 0.05;
+            if (e.key === 'p') console.log('PLATFORM_Y_OFFSET =', PLATFORM_Y_OFFSET);
+            if (e.key === '[' || e.key === ']') {
+                if (innerGroup.children.length > 0) {
+                    const model = innerGroup.children[0];
+                    const b = new THREE.Box3().setFromObject(model);
+                    model.position.y = (platformSurfaceY + PLATFORM_Y_OFFSET) - b.min.y;
+                }
+            }
         });
 
         function showroomAnimate() {
@@ -1418,8 +1443,8 @@
             // Interaction Rotation Lerp
             currentRotY += (targetRotY - currentRotY) * 0.10;
             currentRotX += (targetRotX - currentRotX) * 0.10;
-            currentCarGroup.rotation.y = currentRotY;
-            currentCarGroup.rotation.x = currentRotX;
+            innerGroup.rotation.y = currentRotY;
+            innerGroup.rotation.x = currentRotX;
 
             showroomRenderer.render(showroomScene, showroomCamera);
         }
