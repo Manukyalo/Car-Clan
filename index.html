@@ -1282,6 +1282,13 @@
             if (index === currentCarIndex) return;
             const direction = index > currentCarIndex ? 1 : -1;
             
+            // Cleanup previous mixer
+            if (mixer) {
+                mixer.stopAllAction();
+                mixer.uncacheRoot(mixer.getRoot());
+                mixer = null;
+            }
+
             gsap.to(infoPanel, { opacity: 0, duration: 0.2 });
             gsap.to(outerGroup.position, { 
                 x: platformCenterX - (15 * direction), 
@@ -1320,7 +1327,7 @@
                 const child = innerGroup.children[0];
                 innerGroup.remove(child);
             }
-            if (mixer) mixer = null;
+            // (Mixer cleanup is now handled in switchCar)
 
             // Reset Rotation
             targetRotY = targetRotX = currentRotY = currentRotX = 0;
@@ -1338,8 +1345,9 @@
                     mixer = new THREE.AnimationMixer(model);
                     model.userData.animations.forEach(clip => {
                         const action = mixer.clipAction(clip);
+                        action.setLoop(THREE.LoopRepeat, Infinity);
+                        action.clampWhenFinished = false;
                         action.play();
-                        action.paused = true;
                     });
                 }
 
@@ -1357,22 +1365,32 @@
                     }
                 });
 
-                // 1. Scale based on horizontal axis only
-                const initialBox = new THREE.Box3().setFromObject(model);
-                const initialSize = initialBox.getSize(new THREE.Vector3());
-                const horizontalMax = Math.max(initialSize.x, initialSize.z);
-                const TARGET_SIZE = 3.8;
-                const scaleFactor = TARGET_SIZE / horizontalMax;
-                model.scale.setScalar(scaleFactor);
+                // Step 1: Apply a consistent world-unit scale first
+                const rawBox  = new THREE.Box3().setFromObject(model);
+                const rawSize = rawBox.getSize(new THREE.Vector3());
+                const rawMax  = Math.max(rawSize.x, rawSize.y, rawSize.z);
 
-                // 2. Recompute box after scaling
-                const carBox = new THREE.Box3().setFromObject(model);
-                const center = carBox.getCenter(new THREE.Vector3());
+                if (rawMax > 20) {
+                    model.scale.setScalar(0.01); // cm → m
+                } else if (rawMax < 0.5) {
+                    model.scale.setScalar(10);
+                }
 
-                // 3. Center X and Z, set Y to platform surface
-                model.position.set(-center.x, (platformSurfaceY + PLATFORM_Y_OFFSET) - carBox.min.y, -center.z);
+                // Step 2: Normalize to TARGET_SIZE using horizontal extent only.
+                const normBox        = new THREE.Box3().setFromObject(model);
+                const normSize       = normBox.getSize(new THREE.Vector3());
+                const horizontalMax  = Math.max(normSize.x, normSize.z);
+                const TARGET_SIZE    = 3.8;
+                const finalScale     = TARGET_SIZE / horizontalMax;
+                model.scale.multiplyScalar(finalScale);
+
+                // Step 3: Recompute bounding box AFTER all scaling is done
+                const finalBox    = new THREE.Box3().setFromObject(model);
+                const finalCenter = finalBox.getCenter(new THREE.Vector3());
+                model.position.set(-finalCenter.x, (platformSurfaceY + PLATFORM_Y_OFFSET) - finalBox.min.y, -finalCenter.z);
 
                 if (gltf.animations && gltf.animations.length > 0) {
+                    console.log(carData[index].name, 'has', gltf.animations.length, 'animation(s):', gltf.animations.map(a => a.name));
                     model.userData.animations = gltf.animations;
                 }
 
@@ -1385,9 +1403,13 @@
                     mixer = new THREE.AnimationMixer(model);
                     model.userData.animations.forEach(clip => {
                         const action = mixer.clipAction(clip);
+                        action.setLoop(THREE.LoopRepeat, Infinity);
+                        action.clampWhenFinished = false;
                         action.play();
-                        action.paused = true;
                     });
+                    model.userData.hasMixer = true;
+                } else {
+                    model.userData.hasMixer = false;
                 }
 
                 if (!firstCarLoaded) {
@@ -1431,7 +1453,9 @@
             requestAnimationFrame(showroomAnimate);
             const delta = clock.getDelta();
             
-            if (mixer) mixer.update(delta);
+            if (mixer && innerGroup.children.length > 0) {
+                mixer.update(delta);
+            }
 
             // Particles drift
             const positions = particles.geometry.attributes.position.array;
