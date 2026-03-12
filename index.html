@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Version: 2026-03-12-0315 -->
+<!-- Version: 2026-03-12-0800-FIXED -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -13,6 +13,7 @@
     <!-- CDNs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
@@ -103,6 +104,7 @@
             pointer-events: none;
             z-index: 10000;
             mix-blend-mode: difference;
+            transform: translate(-50%, -50%); /* Center the dot */
         }
 
         #cursor-ring {
@@ -114,6 +116,17 @@
             pointer-events: none;
             z-index: 10000;
             mix-blend-mode: difference;
+            transform: translate(-50%, -50%); /* Center the ring */
+        }
+
+        /* Grain Overlay */
+        .grain-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9001;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.05;
         }
 
         /* Typography & Layout Utilities */
@@ -161,7 +174,6 @@
             object-fit: cover;
         }
 
-        /* Video Fallback - Dot Grid */
         .video-fallback {
             position: absolute;
             top: 0;
@@ -390,7 +402,6 @@
             color: var(--gold);
         }
 
-        /* Book Now Button */
         .btn-book {
             position: relative;
             padding: 12px 25px;
@@ -430,7 +441,6 @@
             transform-origin: left;
         }
 
-        /* Smooth Scroll Smoothing */
         html {
             scroll-behavior: smooth;
         }
@@ -491,6 +501,25 @@
             position: relative;
             background: transparent;
             overflow: hidden;
+            cursor: grab;
+        }
+
+        #showroom-canvas-wrap::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        #showroom-canvas-wrap canvas {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
         }
 
         .showroom-nav {
@@ -696,72 +725,6 @@
             color: var(--white);
         }
 
-        /* Chatbot Widget Enhancement */
-        .chatbot-container {
-            position: fixed;
-            bottom: 100px;
-            right: 30px;
-            width: 350px;
-            height: 450px;
-            background: #111;
-            border: 1px solid var(--gray);
-            border-radius: 20px;
-            display: none;
-            flex-direction: column;
-            z-index: 1001;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-            overflow: hidden;
-            animation: slideUp 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
-        @keyframes slideUp {
-            from { transform: translateY(20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-
-        .chatbot-header {
-            background: var(--gold);
-            padding: 20px;
-            color: #000;
-            font-family: var(--font-display);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .chatbot-messages {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            font-size: 0.9rem;
-            font-family: var(--font-label);
-        }
-
-        .chat-msg {
-            margin-bottom: 15px;
-            padding: 10px 15px;
-            border-radius: 10px;
-            max-width: 80%;
-        }
-
-        .chat-msg.bot { background: var(--gray); align-self: flex-start; }
-        .chat-msg.user { background: var(--gold); color: #000; align-self: flex-end; margin-left: auto; }
-
-        .chatbot-input {
-            padding: 15px;
-            border-top: 1px solid var(--gray);
-            display: flex;
-        }
-
-        .chatbot-input input {
-            background: none;
-            border: none;
-            color: white;
-            flex: 1;
-            outline: none;
-            font-family: var(--font-body);
-        }
-
         /* Responsive Refined */
         @media (max-width: 960px) {
             .nav-links { display: none; }
@@ -788,8 +751,6 @@
             }
             
             #showroom-canvas-wrap { height: 400px; }
-            
-            .chatbot-container { width: 90%; right: 5%; }
         }
 
         @media (max-width: 480px) {
@@ -1000,54 +961,34 @@
                 <li><a href="#">Twitter</a></li>
             </ul>
         </div>
-        <div style="position: absolute; bottom: 10px; right: 10px; opacity: 0.2; font-size: 8px; font-family: var(--font-label);">v2.0.1-OVERHAUL</div>
+        <div style="position: absolute; bottom: 10px; right: 10px; opacity: 0.2; font-size: 8px; font-family: var(--font-label);">v2.0.2-STABLE</div>
     </footer>
 
-    <div class="chatbot-container" id="chatbot">
-        <div class="chatbot-header">
-            <span>Clan Concierge AI</span>
-            <span style="cursor: pointer;" onclick="toggleChat()">✕</span>
-        </div>
-        <div class="chatbot-messages">
-            <div class="chat-msg bot">Welcome to Car Clan. How can I assist you with your luxury booking today?</div>
-        </div>
-        <div class="chatbot-input">
-            <input type="text" placeholder="Ask about our fleet...">
-        </div>
-    </div>
-
-    <div class="chatbot-trigger" onclick="toggleChat()">
-        <svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.477 2 12c0 1.821.487 3.53 1.338 5L2 22l5-1.338c1.47.851 3.179 1.338 5 1.338 5.523 0 10-4.477 10-10S17.523 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"/></svg>
-    </div>
-
     <script>
-        function toggleChat() {
-            const chat = document.getElementById('chatbot');
-            chat.style.display = chat.style.display === 'flex' ? 'none' : 'flex';
-        }
-
-        // Refined Custom Cursor with Lerp
+        // Custom Cursor with Direct Style Assignment
         const dot = document.getElementById('cursor-dot');
         const ring = document.getElementById('cursor-ring');
 
         let mouseX = 0, mouseY = 0;
         let ringX = 0, ringY = 0;
-        const lerpFactor = 0.12;
+        const ringLerpFactor = 0.18;
 
         document.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
             
-            // Dot follows exactly
-            gsap.set(dot, { x: mouseX - 5, y: mouseY - 5 });
+            // Direct Style for Dot (No GSAP for performance)
+            dot.style.left = mouseX + 'px';
+            dot.style.top = mouseY + 'px';
         });
 
         function updateCursor() {
             // Lerp Ring
-            ringX += (mouseX - ringX) * lerpFactor;
-            ringY += (mouseY - ringY) * lerpFactor;
+            ringX += (mouseX - ringX) * ringLerpFactor;
+            ringY += (mouseY - ringY) * ringLerpFactor;
 
-            gsap.set(ring, { x: ringX - 17, y: ringY - 17 });
+            ring.style.left = ringX + 'px';
+            ring.style.top = ringY + 'px';
             
             requestAnimationFrame(updateCursor);
         }
@@ -1080,10 +1021,12 @@
         const video = document.getElementById('hero-video');
         const fallback = document.querySelector('.video-fallback');
         
-        video.onerror = () => {
-            video.style.display = 'none';
-            fallback.style.display = 'block';
-        };
+        if (video) {
+            video.onerror = () => {
+                video.style.display = 'none';
+                fallback.style.display = 'block';
+            };
+        }
 
         // Scroll Listener for Navbar
         const navbar = document.getElementById('navbar');
@@ -1097,14 +1040,15 @@
             }
         });
 
-        // GSAP Section Reveals
+        // Scrolled Reveal Animations
         gsap.utils.toArray('section').forEach(section => {
-            if (section.classList.contains('hero')) return; // Skip hero as it has entrance animation
+            if (section.classList.contains('hero')) return;
 
             gsap.from(section.querySelectorAll('.label, h2, p, .car-card'), {
                 scrollTrigger: {
                     trigger: section,
-                    start: "top 80%",
+                    start: "top 85%",
+                    once: true
                 },
                 y: 50,
                 opacity: 0,
@@ -1138,15 +1082,22 @@
         ];
 
         let currentCarIndex = 0;
-        let mixer; // Animation Mixer
-        const carCache = {}; // Cache for loaded models
+        let mixer; 
+        const carCache = {}; 
         const clock = new THREE.Clock();
         const showroomWrap = document.getElementById('showroom-canvas-wrap');
         const infoPanel = document.getElementById('showroom-info');
         
+        let PLATFORM_Y_OFFSET = 0.08; // Adjust until cars sit perfectly on the stage
+        let firstCarLoaded = false;
+
         // Loading Manager
         const manager = new THREE.LoadingManager();
+        const dracoLoader = new THREE.DRACOLoader();
+        dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+        
         const loader = new THREE.GLTFLoader(manager);
+        loader.setDRACOLoader(dracoLoader);
         
         manager.onProgress = (url, itemsLoaded, itemsTotal) => {
             const progress = (itemsLoaded / itemsTotal * 100);
@@ -1155,12 +1106,18 @@
         };
 
         manager.onLoad = () => {
-            setTimeout(() => {
-                gsap.to('#loading-screen', { opacity: 0, duration: 0.8, onComplete: () => {
-                    document.getElementById('loading-screen').style.display = 'none';
-                }});
-            }, 500);
+            // manager.onLoad is left empty as requested to hide loading screen only after first car
         };
+
+        function hideLoadingScreen() {
+            if (firstCarLoaded) {
+                setTimeout(() => {
+                    gsap.to('#loading-screen', { opacity: 0, duration: 0.8, onComplete: () => {
+                        document.getElementById('loading-screen').style.display = 'none';
+                    }});
+                }, 500);
+            }
+        }
 
         // Scene Setup
         const showroomScene = new THREE.Scene();
@@ -1171,13 +1128,16 @@
         showroomCamera.lookAt(0, 0.8, 0);
 
         const showroomRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        showroomRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Performance cap
+        showroomRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         showroomRenderer.setSize(showroomWrap.clientWidth, showroomWrap.clientHeight);
         showroomRenderer.toneMapping = THREE.ACESFilmicToneMapping;
         showroomRenderer.toneMappingExposure = 1.2;
         showroomRenderer.outputEncoding = THREE.sRGBEncoding;
         showroomRenderer.shadowMap.enabled = true;
-        showroomWrap.appendChild(showroomRenderer.domElement);
+        showroomRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+        // Insert canvas before dots
+        showroomWrap.insertBefore(showroomRenderer.domElement, document.getElementById('dot-indicators'));
 
         // Lighting
         const ambient = new THREE.AmbientLight(0xffffff, 0.4);
@@ -1188,6 +1148,7 @@
         spotLight.angle = Math.PI / 4;
         spotLight.penumbra = 0.5;
         spotLight.castShadow = true;
+        spotLight.shadow.mapSize.set(2048, 2048); // High Quality Shadows
         showroomScene.add(spotLight);
 
         const rimLight = new THREE.PointLight(0xC9A84C, 3, 20);
@@ -1198,10 +1159,8 @@
         const partGeo = new THREE.BufferGeometry();
         const partCount = 150;
         const pos = new Float32Array(partCount * 3);
-        const velocities = [];
         for(let i=0; i<partCount * 3; i++) {
             pos[i] = (Math.random() - 0.5) * 20;
-            velocities.push((Math.random() - 0.5) * 0.01);
         }
         partGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
         const partMat = new THREE.PointsMaterial({ color: 0xC9A84C, size: 0.03, opacity: 0.3, transparent: true });
@@ -1221,7 +1180,68 @@
                 }
             });
             showroomScene.add(env);
+
+            // Attempt to detect platform Y via raycasting
+            const raycaster = new THREE.Raycaster();
+            raycaster.set(new THREE.Vector3(0, 20, 0), new THREE.Vector3(0, -1, 0));
+            const intersects = raycaster.intersectObjects(env.children, true);
+            if (intersects.length > 0) {
+                PLATFORM_Y_OFFSET = intersects[0].point.y;
+            }
         });
+
+        // Rotation Logic (Drag-to-Rotate)
+        let targetRotY = 0, targetRotX = 0;
+        let currentRotY = 0, currentRotX = 0;
+        let isDragging = false;
+        let previousMouseX = 0, previousMouseY = 0;
+
+        showroomWrap.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            previousMouseX = e.clientX;
+            previousMouseY = e.clientY;
+            showroomWrap.style.cursor = 'grabbing';
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+            showroomWrap.style.cursor = 'grab';
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const deltaX = e.clientX - previousMouseX;
+            const deltaY = e.clientY - previousMouseY;
+            previousMouseX = e.clientX;
+            previousMouseY = e.clientY;
+
+            targetRotY += deltaX * 0.008;
+            targetRotX += deltaY * 0.004;
+            targetRotX = Math.max(-0.35, Math.min(0.35, targetRotX));
+        });
+
+        // Touch Support
+        showroomWrap.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            previousMouseX = e.touches[0].clientX;
+            previousMouseY = e.touches[0].clientY;
+        }, { passive: true });
+
+        window.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+
+        window.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            const deltaX = e.touches[0].clientX - previousMouseX;
+            const deltaY = e.touches[0].clientY - previousMouseY;
+            previousMouseX = e.touches[0].clientX;
+            previousMouseY = e.touches[0].clientY;
+
+            targetRotY += deltaX * 0.008;
+            targetRotX += deltaY * 0.004;
+            targetRotX = Math.max(-0.35, Math.min(0.35, targetRotX));
+        }, { passive: true });
 
         // Car Management
         let currentCarGroup = new THREE.Group();
@@ -1251,16 +1271,14 @@
         }
 
         function updateCarUI(index) {
-            // Update UI
             document.getElementById('car-name').innerText = carData[index].name;
             document.getElementById('car-category').innerText = carData[index].category;
             document.getElementById('car-power').innerText = carData[index].power;
             document.getElementById('car-accel').innerText = carData[index].accel;
             document.getElementById('car-speed').innerText = carData[index].speed;
 
-            // Update Quotes
             const carName = carData[index].name;
-            const whatsappMsg = encodeURIComponent(`Hello VELOX DRIVE, I am interested in a quote for the ${carName}. Please provide availability and terms.`);
+            const whatsappMsg = encodeURIComponent(`Hello CAR CLAN, I am interested in a quote for the ${carName}. Please provide availability and terms.`);
             document.getElementById('quote-whatsapp').href = `https://wa.me/254700000000?text=${whatsappMsg}`;
             document.getElementById('quote-email').href = `mailto:concierge@carclan.co.ke?subject=Quote Inquiry: ${carName}&body=I would like to receive a quote for the ${carName}.`;
 
@@ -1274,30 +1292,38 @@
         function loadCarModel(index, direction) {
             updateCarUI(index);
             
-            // Memory Management: Dispose of previous car
+            // Memory Management
             while(currentCarGroup.children.length > 0) {
                 const child = currentCarGroup.children[0];
                 currentCarGroup.remove(child);
-                child.traverse(node => {
-                    if (node.isMesh) {
-                        node.geometry.dispose();
-                        if (Array.isArray(node.material)) {
-                            node.material.forEach(m => m.dispose());
-                        } else {
-                            node.material.dispose();
-                        }
-                    }
-                });
             }
             if (mixer) mixer = null;
+
+            // Reset Rotation
+            targetRotY = targetRotX = currentRotY = currentRotX = 0;
+            currentCarGroup.rotation.set(0, 0, 0);
 
             currentCarIndex = index;
             currentCarGroup.position.x = 15 * direction;
 
             // Cache Check
             if (carCache[index]) {
-                const cachedModel = carCache[index];
-                currentCarGroup.add(cachedModel);
+                const model = carCache[index].clone(true);
+                // Also clone animations if they exist
+                if (carCache[index].userData.animations) {
+                    model.userData.animations = carCache[index].userData.animations;
+                }
+                currentCarGroup.add(model);
+                
+                if (model.userData.animations) {
+                    mixer = new THREE.AnimationMixer(model);
+                    model.userData.animations.forEach(clip => {
+                        const action = mixer.clipAction(clip);
+                        action.play();
+                        action.paused = true; // Stay paused as requested
+                    });
+                }
+
                 gsap.to(currentCarGroup.position, { x: 0, duration: 0.5, ease: "power3.out" });
                 return;
             }
@@ -1305,7 +1331,6 @@
             loader.load(carData[index].file, (gltf) => {
                 const model = gltf.scene;
                 
-                // Retain Original Colors & Materials
                 model.traverse(node => {
                     if (node.isMesh) {
                         node.castShadow = true;
@@ -1313,30 +1338,48 @@
                     }
                 });
 
-                // Handle Animations
+                // Normalizing Scale
+                const box = new THREE.Box3().setFromObject(model);
+                const size = box.getSize(new THREE.Vector3());
+                const maxDim = Math.max(size.x, size.y, size.z);
+                const TARGET_SIZE = 4.5;
+                const scaleFactor = TARGET_SIZE / maxDim;
+                model.scale.setScalar(scaleFactor);
+
+                // Centering & Flooring
+                const box2 = new THREE.Box3().setFromObject(model);
+                const center2 = box2.getCenter(new THREE.Vector3());
+                model.position.x = -center2.x;
+                model.position.y = -box2.min.y + PLATFORM_Y_OFFSET;
+                model.position.z = -center2.z;
+
                 if (gltf.animations && gltf.animations.length > 0) {
-                    model.userData.animations = gltf.animations; // Store for mixer
+                    model.userData.animations = gltf.animations;
                 }
 
-                // Centering
-                const box = new THREE.Box3().setFromObject(model);
-                const center = box.getCenter(new THREE.Vector3());
-                model.position.x = -center.x;
-                model.position.y = -box.min.y;
-                model.position.z = -center.z;
-                
-                // Cache it
+                // Cache original
                 carCache[index] = model;
 
-                currentCarGroup.add(model);
+                const displayModel = model.clone(true);
+                if (model.userData.animations) {
+                    displayModel.userData.animations = model.userData.animations;
+                }
+
+                currentCarGroup.add(displayModel);
                 gsap.to(currentCarGroup.position, { x: 0, duration: 0.5, ease: "power3.out" });
 
-                // If this is the current car, update mixer
-                if (currentCarIndex === index && model.userData.animations) {
-                    mixer = new THREE.AnimationMixer(model);
-                    model.userData.animations.forEach(clip => {
-                        mixer.clipAction(clip).play();
+                if (displayModel.userData.animations) {
+                    mixer = new THREE.AnimationMixer(displayModel);
+                    displayModel.userData.animations.forEach(clip => {
+                        const action = mixer.clipAction(clip);
+                        action.play();
+                        action.paused = true; // Stay paused
                     });
+                }
+
+                if (!firstCarLoaded) {
+                    firstCarLoaded = true;
+                    hideLoadingScreen();
                 }
             });
         }
@@ -1368,24 +1411,28 @@
             // Particles drift
             const positions = particles.geometry.attributes.position.array;
             for(let i=0; i<partCount * 3; i++) {
-                positions[i] += Math.sin(Date.now() * 0.0005 + i) * 0.0015;
+                positions[i] += Math.sin(Date.now() * 0.0005 + i) * 0.001;
             }
             particles.geometry.attributes.position.needsUpdate = true;
             
-            // Subtle rotation
-            if(currentCarGroup.children.length > 0) {
-                currentCarGroup.rotation.y += 0.001;
-            }
+            // Interaction Rotation Lerp
+            currentRotY += (targetRotY - currentRotY) * 0.10;
+            currentRotX += (targetRotX - currentRotX) * 0.10;
+            currentCarGroup.rotation.y = currentRotY;
+            currentCarGroup.rotation.x = currentRotX;
 
             showroomRenderer.render(showroomScene, showroomCamera);
         }
         showroomAnimate();
 
-        window.addEventListener('resize', () => {
+        // Resize Handling with ResizeObserver
+        const ro = new ResizeObserver(() => {
             showroomCamera.aspect = showroomWrap.clientWidth / showroomWrap.clientHeight;
             showroomCamera.updateProjectionMatrix();
             showroomRenderer.setSize(showroomWrap.clientWidth, showroomWrap.clientHeight);
         });
+        ro.observe(showroomWrap);
+
     </script>
 </body>
 </html>
