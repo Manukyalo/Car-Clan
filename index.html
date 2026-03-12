@@ -1065,7 +1065,6 @@
             { name: "Mercedes G-Class AMG G63", category: "Luxury Icon", power: "577 HP", accel: "4.2s", speed: "220 km/h", file: "assets/fleet/2025_mercedes-benz_g-class_amg_g_63.glb" },
             { name: "Lamborghini Centenario", category: "Hypercar Exclusive", power: "770 HP", accel: "2.8s", speed: "350 km/h", file: "assets/fleet/lamborghini_centenario_lp-770_interior_sdc.glb" },
             { name: "Audi RS7", category: "Sportback King", power: "591 HP", accel: "3.5s", speed: "305 km/h", file: "assets/fleet/audi.glb" },
-            { name: "BMW X6M Competition", category: "Sports Activity Coupe", power: "617 HP", accel: "3.8s", speed: "290 km/h", file: "assets/fleet/bmw_x6m_competition_assetto__www.vecarz.com.glb" },
             { name: "Mercedes GLE 63 AMG", category: "High-Performance SUV", power: "577 HP", accel: "3.9s", speed: "250 km/h", file: "assets/fleet/2016_mercedes-benz_gle63_amg_coupe.glb" },
             { name: "Mercedes S63 AMG Coupe", category: "Luxury Coupe", power: "603 HP", accel: "3.4s", speed: "300 km/h", file: "assets/fleet/2018_mercedes-benz_s63_amg_coupe.glb" },
             { name: "BMW M4 Competition", category: "Precision Coupe", power: "510 HP", accel: "3.9s", speed: "290 km/h", file: "assets/fleet/2021_bmw_m4_competition.glb" },
@@ -1119,21 +1118,6 @@
             }
         }
 
-        // Helper: Build a tight box from ONLY isMesh nodes
-        function getTightBoundingBox(object) {
-            const box = new THREE.Box3();
-            let hasMesh = false;
-            object.traverse(node => {
-                if (node.isMesh) {
-                    const meshBox = new THREE.Box3().setFromObject(node);
-                    box.union(meshBox);
-                    hasMesh = true;
-                }
-            });
-            // Fallback for safety if no mesh is found
-            if (!hasMesh) return new THREE.Box3().setFromObject(object);
-            return box;
-        }
 
         // Scene Setup
         const showroomScene = new THREE.Scene();
@@ -1382,7 +1366,7 @@
                 });
 
                 // Step 1: Apply a consistent world-unit scale first
-                const rawBox  = getTightBoundingBox(model);
+                const rawBox  = new THREE.Box3().setFromObject(model);
                 const rawSize = rawBox.getSize(new THREE.Vector3());
                 const rawMax  = Math.max(rawSize.x, rawSize.y, rawSize.z);
 
@@ -1393,14 +1377,15 @@
                 }
 
                 // Step 2: Normalize to TARGET_SIZE using horizontal extent only.
-                const normBox       = getTightBoundingBox(model);
-                const normSize      = normBox.getSize(new THREE.Vector3());
-                const horizontalMax = Math.max(normSize.x, normSize.z);
-                const TARGET_SIZE   = 3.8;
-                model.scale.multiplyScalar(TARGET_SIZE / horizontalMax);
+                const normBox        = new THREE.Box3().setFromObject(model);
+                const normSize       = normBox.getSize(new THREE.Vector3());
+                const horizontalMax  = Math.max(normSize.x, normSize.z);
+                const TARGET_SIZE    = 3.8;
+                const finalScale     = TARGET_SIZE / horizontalMax;
+                model.scale.multiplyScalar(finalScale);
 
                 // Step 3: Recompute bounding box AFTER all scaling is done
-                const finalBox    = getTightBoundingBox(model);
+                const finalBox    = new THREE.Box3().setFromObject(model);
                 const finalCenter = finalBox.getCenter(new THREE.Vector3());
                 model.position.set(-finalCenter.x, (platformSurfaceY + PLATFORM_Y_OFFSET) - finalBox.min.y, -finalCenter.z);
 
@@ -1458,7 +1443,7 @@
             if (e.key === '[' || e.key === ']') {
                 if (innerGroup.children.length > 0) {
                     const model = innerGroup.children[0];
-                    const b = getTightBoundingBox(model);
+                    const b = new THREE.Box3().setFromObject(model);
                     model.position.y = (platformSurfaceY + PLATFORM_Y_OFFSET) - b.min.y;
                 }
             }
