@@ -176,15 +176,25 @@
 
         .video-fallback {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle, rgba(201,168,76,0.1) 1px, transparent 1px);
-            background-size: 30px 30px;
+            inset: 0;
             display: none;
-            z-index: -1;
+            background:
+                radial-gradient(
+                    ellipse 80% 60% at 50% 40%,
+                    rgba(201,168,76,0.12) 0%,
+                    transparent 65%
+                ),
+                linear-gradient(160deg, #0a0a0a 0%, #111008 50%, #060606 100%);
+            z-index: 0;
+        }
+        .video-fallback::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+            background-size: 60px 60px;
         }
 
         .hero-overlay {
@@ -753,9 +763,82 @@
             #showroom-canvas-wrap { height: 400px; }
         }
 
+        @media (max-width: 768px) {
+            .hero {
+                min-height: 80vh;
+            }
+            .scroll-indicator {
+                bottom: 16px;
+                opacity: 0.6;
+            }
+            .scroll-line {
+                height: 36px;
+            }
+            .btn-book {
+                padding: 10px 18px;
+                font-size: 9px;
+                letter-spacing: 1.5px;
+            }
+            nav {
+                padding: 16px 5%;
+            }
+            .hero-content {
+                bottom: 12%;
+                left: 5%;
+                right: 5%;
+                max-width: 100%;
+            }
+            .hero h1 {
+                font-size: clamp(48px, 12vw, 80px);
+                margin-bottom: 16px;
+            }
+            .hero-subtext {
+                font-size: 13px;
+                margin-bottom: 24px;
+                max-width: 100%;
+            }
+            .hero-btns {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+            .hero-btns .btn-book,
+            .hero-btns .btn-ghost {
+                width: fit-content;
+            }
+            .nav-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+                background: rgba(6,6,6,0.75);
+                border-color: rgba(201,168,76,0.4);
+            }
+            .showroom-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+        }
+
+        @media (hover: none), (pointer: coarse) {
+            #cursor-dot,
+            #cursor-ring {
+                display: none !important;
+            }
+            * {
+                cursor: auto !important;
+            }
+        }
+
         @media (max-width: 480px) {
+            .hero {
+                min-height: 70vh;
+            }
             .hero h1 { font-size: 3.5rem; }
             section { padding: 60px 5%; }
+            .scroll-indicator {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -965,34 +1048,48 @@
     </footer>
 
     <script>
-        // Custom Cursor with Direct Style Assignment
-        const dot = document.getElementById('cursor-dot');
-        const ring = document.getElementById('cursor-ring');
+        // Custom Cursor wrapped for touch detection
+        const isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 
-        let mouseX = 0, mouseY = 0;
-        let ringX = 0, ringY = 0;
-        const ringLerpFactor = 0.18;
+        if (!isTouch) {
+            const dot = document.getElementById('cursor-dot');
+            const ring = document.getElementById('cursor-ring');
 
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-            
-            // Direct Style for Dot (No GSAP for performance)
-            dot.style.left = mouseX + 'px';
-            dot.style.top = mouseY + 'px';
-        });
+            let mouseX = 0, mouseY = 0;
+            let ringX = 0, ringY = 0;
+            const ringLerpFactor = 0.18;
 
-        function updateCursor() {
-            // Lerp Ring
-            ringX += (mouseX - ringX) * ringLerpFactor;
-            ringY += (mouseY - ringY) * ringLerpFactor;
+            document.addEventListener('mousemove', (e) => {
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                
+                dot.style.left = mouseX + 'px';
+                dot.style.top = mouseY + 'px';
+            });
 
-            ring.style.left = ringX + 'px';
-            ring.style.top = ringY + 'px';
-            
-            requestAnimationFrame(updateCursor);
+            function updateCursor() {
+                ringX += (mouseX - ringX) * ringLerpFactor;
+                ringY += (mouseY - ringY) * ringLerpFactor;
+
+                ring.style.left = ringX + 'px';
+                ring.style.top = ringY + 'px';
+                
+                requestAnimationFrame(updateCursor);
+            }
+            updateCursor();
+
+            // Hover expansion logic
+            document.querySelectorAll('a, button, .nav-btn, .dot').forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    ring.style.transform = 'translate(-50%, -50%) scale(1.5)';
+                    ring.style.borderColor = 'var(--white)';
+                });
+                el.addEventListener('mouseleave', () => {
+                    ring.style.transform = 'translate(-50%, -50%) scale(1)';
+                    ring.style.borderColor = 'var(--gold)';
+                });
+            });
         }
-        updateCursor();
 
         // Register ScrollTrigger
         gsap.registerPlugin(ScrollTrigger);
@@ -1021,11 +1118,20 @@
         const video = document.getElementById('hero-video');
         const fallback = document.querySelector('.video-fallback');
         
+        // Show fallback immediately on mobile while video loads
+        const isMobile = navigator.maxTouchPoints > 0;
+        if (isMobile && fallback) {
+            fallback.style.display = 'block';
+        }
+
         if (video) {
-            video.onerror = () => {
+            video.addEventListener('canplay', () => {
+                if (fallback) fallback.style.display = 'none';
+            });
+            video.addEventListener('error', () => {
+                if (fallback) fallback.style.display = 'block';
                 video.style.display = 'none';
-                fallback.style.display = 'block';
-            };
+            });
         }
 
         // Scroll Listener for Navbar
