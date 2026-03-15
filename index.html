@@ -844,6 +844,162 @@
                 display: none;
             }
         }
+        /* Gallery Section */
+        .gallery {
+            background-color: #060606;
+            padding: 100px 0;
+            overflow: hidden;
+            min-height: auto;
+        }
+
+        .gallery-header {
+            padding: 0 5%;
+            margin-bottom: 60px;
+            text-align: left;
+        }
+
+        .gallery-header h2 {
+            font-size: 3.5rem;
+            margin-top: 10px;
+        }
+
+        .gallery-hero {
+            width: 100%;
+            height: 60vh;
+            margin-bottom: 4px;
+        }
+
+        .gallery-hero img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gallery-grid {
+            column-count: 3;
+            column-gap: 4px;
+            padding: 0 0;
+        }
+
+        .gallery-item {
+            break-inside: avoid;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 4px;
+            cursor: pointer;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.6s cubic-bezier(0.2, 1, 0.3, 1);
+        }
+
+        .gallery-item::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 0 solid var(--gold);
+            transition: border-width 0.4s ease;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.03);
+        }
+
+        .gallery-item:hover::after {
+            border-width: 2px;
+        }
+
+        .gallery-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 40px 20px 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.2, 1, 0.3, 1);
+            z-index: 3;
+        }
+
+        .gallery-item:hover .gallery-caption {
+            transform: translateY(0);
+        }
+
+        .gallery-caption .label {
+            font-size: 10px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .gallery-caption .car-name {
+            font-size: 1.2rem;
+            font-family: var(--font-display);
+            color: var(--white);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Lightbox */
+        #lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        #lightbox.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        #lightbox-img {
+            max-width: 90vw;
+            max-height: 90vh;
+            object-fit: contain;
+            transform: scale(0.9);
+            transition: transform 0.4s cubic-bezier(0.2, 1, 0.3, 1);
+        }
+
+        #lightbox.active #lightbox-img {
+            transform: scale(1);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            color: var(--white);
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 10000;
+            font-family: var(--font-label);
+            transition: color 0.3s;
+        }
+
+        .lightbox-close:hover {
+            color: var(--gold);
+        }
+
+        @media (max-width: 768px) {
+            .gallery-grid { column-count: 2; }
+            .gallery-header h2 { font-size: 2.5rem; }
+        }
+
+        @media (max-width: 480px) {
+            .gallery-grid { column-count: 1; }
+            .gallery-hero { height: 40vh; }
+        }
     </style>
 </head>
 <body>
@@ -869,6 +1025,7 @@
         <div class="nav-links">
             <a href="#showroom">Showroom</a>
             <a href="#fleet">Fleet</a>
+            <a href="#gallery">Gallery</a>
             <a href="#features">Features</a>
             <a href="#contact">Contact</a>
         </div>
@@ -1026,6 +1183,70 @@
                 <div class="label" style="margin-top: 20px;">— David K., CEO</div>
             </div>
         </section>
+        <!-- Gallery Section -->
+        <section id="gallery" class="gallery">
+            <div class="gallery-header">
+                <div class="label">Our Work</div>
+                <h2>Beyond The Ordinary</h2>
+                <p>Every car photographed as a work of art.</p>
+            </div>
+            
+            <div class="gallery-hero">
+                <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1920&q=80" alt="Luxury Car Hero" loading="lazy">
+            </div>
+
+            <div class="gallery-grid">
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&q=80" alt="Mercedes-Benz S-Class" loading="lazy">
+                    <div class="gallery-caption">
+                        <span class="label">Elite</span>
+                        <span class="car-name">S-Class Luxury</span>
+                    </div>
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&q=80" alt="Porsche 911" loading="lazy">
+                    <div class="gallery-caption">
+                        <span class="label">Performance</span>
+                        <span class="car-name">911 GT3 RS</span>
+                    </div>
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img src="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=800&q=80" alt="BMW M8" loading="lazy">
+                    <div class="gallery-caption">
+                        <span class="label">Precision</span>
+                        <span class="car-name">M8 Competition</span>
+                    </div>
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img src="https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&q=80" alt="Mercedes AMG G63" loading="lazy">
+                    <div class="gallery-caption">
+                        <span class="label">Iconic</span>
+                        <span class="car-name">G-Wagon AMG</span>
+                    </div>
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img src="https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?w=800&q=80" alt="Audi R8" loading="lazy">
+                    <div class="gallery-caption">
+                        <span class="label">Supercar</span>
+                        <span class="car-name">Audi R8 V10</span>
+                    </div>
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=800&q=80" alt="Lamborghini Urus" loading="lazy">
+                    <div class="gallery-caption">
+                        <span class="label">Exotic</span>
+                        <span class="car-name">Urus Performante</span>
+                    </div>
+                </div>
+                <div class="gallery-item" onclick="openLightbox(this)">
+                    <img src="https://images.unsplash.com/photo-1471444928139-48c5bf5173f8?w=800&q=80" alt="Lexus LX" loading="lazy">
+                    <div class="gallery-caption">
+                        <span class="label">Sovereign</span>
+                        <span class="car-name">Lexus LX 600</span>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <footer>
@@ -1084,7 +1305,7 @@
             updateCursor();
 
             // Hover expansion logic
-            document.querySelectorAll('a, button, .nav-btn, .dot').forEach(el => {
+            document.querySelectorAll('a, button, .nav-btn, .dot, .gallery-item').forEach(el => {
                 el.addEventListener('mouseenter', () => {
                     ring.style.transform = 'translate(-50%, -50%) scale(1.5)';
                     ring.style.borderColor = 'var(--white)';
@@ -1606,6 +1827,53 @@
         });
         ro.observe(showroomWrap);
 
+        // Lightbox Functionality
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+
+        function openLightbox(element) {
+            const imgSrc = element.querySelector('img').src;
+            if (lightboxImg) lightboxImg.src = imgSrc;
+            if (lightbox) lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Cursor interaction fix for lightbox
+            if (!isTouch) {
+                const ring = document.getElementById('cursor-ring');
+                const dot = document.getElementById('cursor-dot');
+                if (ring) ring.style.display = 'none';
+                if (dot) dot.style.display = 'none';
+            }
+        }
+
+        function closeLightbox() {
+            if (lightbox) lightbox.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            
+            if (!isTouch) {
+                const ring = document.getElementById('cursor-ring');
+                const dot = document.getElementById('cursor-dot');
+                if (ring) ring.style.display = 'block';
+                if (dot) dot.style.display = 'block';
+            }
+        }
+
+        if (lightbox) {
+            lightbox.addEventListener('click', (e) => {
+                if (e.target === lightbox || e.target.classList.contains('lightbox-close')) {
+                    closeLightbox();
+                }
+            });
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeLightbox();
+        });
+
     </script>
+    <div id="lightbox">
+        <span class="lightbox-close">&times;</span>
+        <img src="" id="lightbox-img" alt="Lightbox Image">
+    </div>
 </body>
 </html>
