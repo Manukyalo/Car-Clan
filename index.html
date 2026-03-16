@@ -464,36 +464,188 @@
             background: #0a0a0a;
         }
 
+        .fleet-subtext {
+            color: #666;
+            font-size: 14px;
+            margin-top: 10px;
+            font-family: var(--font-label);
+        }
+
+        .fleet-filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 30px 0 50px;
+        }
+
+        .filter-btn {
+            padding: 9px 22px;
+            border: 1px solid rgba(201,168,76,0.3);
+            background: transparent;
+            color: #888;
+            font-family: var(--font-label);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            border-color: var(--gold);
+            color: var(--gold);
+            background: rgba(201,168,76,0.06);
+        }
+
         .fleet-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 50px;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 2px;
         }
 
         .car-card {
-            background: var(--gray);
-            padding: 30px;
-            border: 1px solid rgba(201, 168, 76, 0.1);
-            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            background: #0d0d0d;
+            border: 1px solid rgba(201,168,76,0.1);
+            transition: border-color 0.4s, transform 0.4s;
             position: relative;
             overflow: hidden;
         }
 
         .car-card:hover {
-            border-color: var(--gold);
-            transform: translateY(-10px);
+            border-color: rgba(201,168,76,0.5);
+            transform: translateY(-6px);
         }
 
-        .car-card h3 {
-            font-size: 2rem;
-            margin-bottom: 10px;
+        .car-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: var(--gold);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s;
         }
 
-        .car-price {
+        .car-card:hover::before { transform: scaleX(1); }
+
+        .car-card-img {
+            position: relative;
+            height: 220px;
+            overflow: hidden;
+        }
+
+        .car-card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .car-card:hover .car-card-img img {
+            transform: scale(1.05);
+        }
+
+        .car-card-badge {
+            position: absolute;
+            top: 16px; left: 16px;
             font-family: var(--font-label);
+            font-size: 9px;
+            color: #000;
+            background: var(--gold);
+            padding: 4px 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .car-card-body { padding: 28px; }
+
+        .car-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            gap: 12px;
+        }
+
+        .car-card-cat {
+            font-family: var(--font-label);
+            font-size: 9px;
             color: var(--gold);
-            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+        }
+
+        .car-card-name {
+            font-size: 1.4rem;
+            color: var(--white);
+            font-family: var(--font-display);
+            letter-spacing: 1px;
+        }
+
+        .car-card-price { text-align: right; flex-shrink: 0; }
+
+        .price-from {
+            display: block;
+            font-family: var(--font-label);
+            font-size: 9px;
+            color: #555;
+            letter-spacing: 2px;
+        }
+
+        .price-val {
+            display: block;
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            color: var(--gold);
+            line-height: 1.1;
+        }
+
+        .price-per {
+            font-family: var(--font-label);
+            font-size: 9px;
+            color: #555;
+        }
+
+        .car-card-specs {
+            display: flex;
+            gap: 20px;
+            padding: 16px 0;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 20px;
+        }
+
+        .spec { display: flex; flex-direction: column; gap: 4px; }
+
+        .spec-label {
+            font-family: var(--font-label);
+            font-size: 9px;
+            color: #444;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .spec-val {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            color: var(--white);
+        }
+
+        .car-card-actions { display: flex; gap: 10px; }
+
+        .car-card-actions .btn-book {
+            flex: 1;
+            text-align: center;
+            padding: 11px 16px;
+            font-size: 9px;
+        }
+
+        .car-card-actions .btn-ghost {
+            padding: 11px 16px;
+            font-size: 9px;
         }
 
         /* Showroom Rebuild Styles */
@@ -822,6 +974,17 @@
                 align-items: flex-start;
                 gap: 16px;
             }
+
+            .fleet-grid {
+                grid-template-columns: 1fr;
+            }
+            .car-card-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .car-card-price { text-align: left; }
+            .fleet-filters { gap: 8px; }
+            .filter-btn { padding: 8px 14px; font-size: 9px; }
         }
 
         @media (hover: none), (pointer: coarse) {
@@ -1126,21 +1289,759 @@
         <section id="fleet" class="fleet">
             <div class="label">The Collection</div>
             <h2>Our Fleet</h2>
+            <p class="fleet-subtext">
+                19 meticulously maintained machines. 
+                Every journey, unforgettable.
+            </p>
+
+            <div class="fleet-filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="suv">SUV</button>
+                <button class="filter-btn" data-filter="sedan">Sedan</button>
+                <button class="filter-btn" data-filter="coupe">Coupé</button>
+                <button class="filter-btn" data-filter="supercar">Supercar</button>
+            </div>
+
             <div class="fleet-grid">
-                <div class="car-card">
-                    <span class="label">SUV</span>
-                    <h3>Range Rover Autobiography</h3>
-                    <p class="car-price">KES 120,000 / Day</p>
+                <!-- BMW M5 CS -->
+                <div class="car-card reveal" data-category="sedan">
+                    <div class="car-card-img">
+                        <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?w=700&q=80" alt="BMW M5 CS" loading="lazy">
+                        <div class="car-card-badge">SEDAN</div>
+                    </div>
+                    <div class="car-card-body">
+                        <div class="car-card-header">
+                            <div>
+                                <p class="car-card-cat">Elite Performance</p>
+                                <h3 class="car-card-name">BMW M5 CS</h3>
+                            </div>
+                            <div class="car-card-price">
+                                <span class="price-from">FROM</span>
+                                <span class="price-val">KES 85,000</span>
+                                <span class="price-per">/day</span>
+                            </div>
+                        </div>
+                        <div class="car-card-specs">
+                            <div class="spec">
+                                <span class="spec-label">Power</span>
+                                <span class="spec-val">627 HP</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">0–100</span>
+                                <span class="spec-val">2.9s</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">Top Speed</span>
+                                <span class="spec-val">305 km/h</span>
+                            </div>
+                        </div>
+                        <div class="car-card-actions">
+                            <a href="https://wa.me/254700000000?text=Hello%20Car%20Clan%2C%20I%20am%20interested%20in%20the%20BMW%20M5%20CS.%20Please%20advise%20on%20availability." target="_blank" rel="noopener" class="btn-book">Book via WhatsApp</a>
+                            <a href="mailto:concierge@carclan.co.ke?subject=Quote: BMW M5 CS" class="btn-ghost">Email Enquiry</a>
+                        </div>
+                    </div>
                 </div>
-                <div class="car-card">
-                    <span class="label">Luxury Sedan</span>
-                    <h3>Mercedes S-Class</h3>
-                    <p class="car-price">KES 95,000 / Day</p>
+
+                <!-- Porsche 911 Turbo S -->
+                <div class="car-card reveal" data-category="supercar">
+                    <div class="car-card-img">
+                        <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=700&q=80" alt="Porsche 911 Turbo S" loading="lazy">
+                        <div class="car-card-badge">SUPERCAR</div>
+                    </div>
+                    <div class="car-card-body">
+                        <div class="car-card-header">
+                            <div>
+                                <p class="car-card-cat">Precision Sports</p>
+                                <h3 class="car-card-name">Porsche 911 Turbo S</h3>
+                            </div>
+                            <div class="car-card-price">
+                                <span class="price-from">FROM</span>
+                                <span class="price-val">KES 120,000</span>
+                                <span class="price-per">/day</span>
+                            </div>
+                        </div>
+                        <div class="car-card-specs">
+                            <div class="spec">
+                                <span class="spec-label">Power</span>
+                                <span class="spec-val">640 HP</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">0–100</span>
+                                <span class="spec-val">2.6s</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">Top Speed</span>
+                                <span class="spec-val">330 km/h</span>
+                            </div>
+                        </div>
+                        <div class="car-card-actions">
+                            <a href="https://wa.me/254700000000?text=Hello%20Car%20Clan%2C%20I%20am%20interested%20in%20the%20Porsche%20911%20Turbo%20S.%20Please%20advise%20on%20availability." target="_blank" rel="noopener" class="btn-book">Book via WhatsApp</a>
+                            <a href="mailto:concierge@carclan.co.ke?subject=Quote: Porsche 911 Turbo S" class="btn-ghost">Email Enquiry</a>
+                        </div>
+                    </div>
                 </div>
-                <div class="car-card">
-                    <span class="label">Off-Road</span>
-                    <h3>Toyota Land Cruiser V8</h3>
-                    <p class="car-price">KES 45,000 / Day</p>
+
+                <!-- Mercedes G63 AMG -->
+                <div class="car-card reveal" data-category="suv">
+                    <div class="car-card-img">
+                        <img src="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=700&q=80" alt="Mercedes G63 AMG" loading="lazy">
+                        <div class="car-card-badge">SUV</div>
+                    </div>
+                    <div class="car-card-body">
+                        <div class="car-card-header">
+                            <div>
+                                <p class="car-card-cat">Luxury Icon</p>
+                                <h3 class="car-card-name">Mercedes G63 AMG</h3>
+                            </div>
+                            <div class="car-card-price">
+                                <span class="price-from">FROM</span>
+                                <span class="price-val">KES 130,000</span>
+                                <span class="price-per">/day</span>
+                            </div>
+                        </div>
+                        <div class="car-card-specs">
+                            <div class="spec">
+                                <span class="spec-label">Power</span>
+                                <span class="spec-val">577 HP</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">0–100</span>
+                                <span class="spec-val">4.2s</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">Top Speed</span>
+                                <span class="spec-val">220 km/h</span>
+                            </div>
+                        </div>
+                        <div class="car-card-actions">
+                            <a href="https://wa.me/254700000000?text=Hello%20Car%20Clan%2C%20I%20am%20interested%20in%20the%20Mercedes%20G63%20AMG.%20Please%20advise%20on%20availability." target="_blank" rel="noopener" class="btn-book">Book via WhatsApp</a>
+                            <a href="mailto:concierge@carclan.co.ke?subject=Quote: Mercedes G63 AMG" class="btn-ghost">Email Enquiry</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lamborghini Centenario -->
+                <div class="car-card reveal" data-category="supercar">
+                    <div class="car-card-img">
+                        <img src="https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=700&q=80" alt="Lamborghini Centenario" loading="lazy">
+                        <div class="car-card-badge">SUPERCAR</div>
+                    </div>
+                    <div class="car-card-body">
+                        <div class="car-card-header">
+                            <div>
+                                <p class="car-card-cat">Hypercar</p>
+                                <h3 class="car-card-name">Lamborghini Centenario</h3>
+                            </div>
+                            <div class="car-card-price">
+                                <span class="price-from">FROM</span>
+                                <span class="price-val">KES 200,000</span>
+                                <span class="price-per">/day</span>
+                            </div>
+                        </div>
+                        <div class="car-card-specs">
+                            <div class="spec">
+                                <span class="spec-label">Power</span>
+                                <span class="spec-val">770 HP</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">0–100</span>
+                                <span class="spec-val">2.8s</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">Top Speed</span>
+                                <span class="spec-val">350 km/h</span>
+                            </div>
+                        </div>
+                        <div class="car-card-actions">
+                            <a href="https://wa.me/254700000000?text=Hello%20Car%20Clan%2C%20I%20am%20interested%20in%20the%20Lamborghini%20Centenario.%20Please%20advise%20on%20availability." target="_blank" rel="noopener" class="btn-book">Book via WhatsApp</a>
+                            <a href="mailto:concierge@carclan.co.ke?subject=Quote: Lamborghini Centenario" class="btn-ghost">Email Enquiry</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audi RS7 -->
+                <div class="car-card reveal" data-category="sedan">
+                    <div class="car-card-img">
+                        <img src="https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=700&q=80" alt="Audi RS7" loading="lazy">
+                        <div class="car-card-badge">SEDAN</div>
+                    </div>
+                    <div class="car-card-body">
+                        <div class="car-card-header">
+                            <div>
+                                <p class="car-card-cat">Sportback King</p>
+                                <h3 class="car-card-name">Audi RS7</h3>
+                            </div>
+                            <div class="car-card-price">
+                                <span class="price-from">FROM</span>
+                                <span class="price-val">KES 75,000</span>
+                                <span class="price-per">/day</span>
+                            </div>
+                        </div>
+                        <div class="car-card-specs">
+                            <div class="spec">
+                                <span class="spec-label">Power</span>
+                                <span class="spec-val">591 HP</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">0–100</span>
+                                <span class="spec-val">3.5s</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">Top Speed</span>
+                                <span class="spec-val">305 km/h</span>
+                            </div>
+                        </div>
+                        <div class="car-card-actions">
+                            <a href="https://wa.me/254700000000?text=Hello%20Car%20Clan%2C%20I%20am%20interested%20in%20the%20Audi%20RS7.%20Please%20advise%20on%20availability." target="_blank" rel="noopener" class="btn-book">Book via WhatsApp</a>
+                            <a href="mailto:concierge@carclan.co.ke?subject=Quote: Audi RS7" class="btn-ghost">Email Enquiry</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BMW X6M Competition -->
+                <div class="car-card reveal" data-category="suv">
+                    <div class="car-card-img">
+                        <img src="https://images.unsplash.com/photo-1617469767053-d3b523a0b982?w=700&q=80" alt="BMW X6M Competition" loading="lazy">
+                        <div class="car-card-badge">SUV</div>
+                    </div>
+                    <div class="car-card-body">
+                        <div class="car-card-header">
+                            <div>
+                                <p class="car-card-cat">Sports Activity Coupé</p>
+                                <h3 class="car-card-name">BMW X6M Competition</h3>
+                            </div>
+                            <div class="car-card-price">
+                                <span class="price-from">FROM</span>
+                                <span class="price-val">KES 95,000</span>
+                                <span class="price-per">/day</span>
+                            </div>
+                        </div>
+                        <div class="car-card-specs">
+                            <div class="spec">
+                                <span class="spec-label">Power</span>
+                                <span class="spec-val">617 HP</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">0–100</span>
+                                <span class="spec-val">3.8s</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">Top Speed</span>
+                                <span class="spec-val">290 km/h</span>
+                            </div>
+                        </div>
+                        <div class="car-card-actions">
+                            <a href="https://wa.me/254700000000?text=Hello%20Car%20Clan%2C%20I%20am%20interested%20in%20the%20BMW%20X6M%20Competition.%20Please%20advise%20on%20availability." target="_blank" rel="noopener" class="btn-book">Book via WhatsApp</a>
+                            <a href="mailto:concierge@carclan.co.ke?subject=Quote: BMW X6M Competition" class="btn-ghost">Email Enquiry</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mercedes GLE 63 AMG -->
+                <div class="car-card reveal" data-category="suv">
+                    <div class="car-card-img">
+                        <img src="https://images.unsplash.com/photo-1563720360172-67b8f3dce741?w=700&q=80" alt="Mercedes GLE 63 AMG" loading="lazy">
+                        <div class="car-card-badge">SUV</div>
+                    </div>
+                    <div class="car-card-body">
+                        <div class="car-card-header">
+                            <div>
+                                <p class="car-card-cat">Performance SUV</p>
+                                <h3 class="car-card-name">Mercedes GLE 63 AMG</h3>
+                            </div>
+                            <div class="car-card-price">
+                                <span class="price-from">FROM</span>
+                                <span class="price-val">KES 90,000</span>
+                                <span class="price-per">/day</span>
+                            </div>
+                        </div>
+                        <div class="car-card-specs">
+                            <div class="spec">
+                                <span class="spec-label">Power</span>
+                                <span class="spec-val">577 HP</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">0–100</span>
+                                <span class="spec-val">3.9s</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">Top Speed</span>
+                                <span class="spec-val">250 km/h</span>
+                            </div>
+                        </div>
+                        <div class="car-card-actions">
+                            <a href="https://wa.me/254700000000?text=Hello%20Car%20Clan%2C%20I%20am%20interested%20in%20the%20Mercedes%20GLE%2063%20AMG.%20Please%20advise%20on%20availability." target="_blank" rel="noopener" class="btn-book">Book via WhatsApp</a>
+                            <a href="mailto:concierge@carclan.co.ke?subject=Quote: Mercedes GLE 63 AMG" class="btn-ghost">Email Enquiry</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mercedes S63 AMG Coupé -->
+                <div class="car-card reveal" data-category="coupe">
+                    <div class="car-card-img">
+                        <img src="https://images.unsplash.com/photo-1550355291-bbee04a92027?w=700&q=80" alt="Mercedes S63 Coupé" loading="lazy">
+                        <div class="car-card-badge">COUPÉ</div>
+                    </div>
+                    <div class="car-card-body">
+                        <div class="car-card-header">
+                            <div>
+                                <p class="car-card-cat">Luxury Coupé</p>
+                                <h3 class="car-card-name">Mercedes S63 AMG Coupé</h3>
+                            </div>
+                            <div class="car-card-price">
+                                <span class="price-from">FROM</span>
+                                <span class="price-val">KES 110,000</span>
+                                <span class="price-per">/day</span>
+                            </div>
+                        </div>
+                        <div class="car-card-specs">
+                            <div class="spec">
+                                <span class="spec-label">Power</span>
+                                <span class="spec-val">603 HP</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">0–100</span>
+                                <span class="spec-val">3.4s</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">Top Speed</span>
+                                <span class="spec-val">300 km/h</span>
+                            </div>
+                        </div>
+                        <div class="car-card-actions">
+                            <a href="https://wa.me/254700000000?text=Hello%20Car%20Clan%2C%20I%20am%20interested%20in%20the%20Mercedes%20S63%20AMG%20Coup%C3%A9.%20Please%20advise%20on%20availability." target="_blank" rel="noopener" class="btn-book">Book via WhatsApp</a>
+                            <a href="mailto:concierge@carclan.co.ke?subject=Quote: Mercedes S63 AMG Coupé" class="btn-ghost">Email Enquiry</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BMW M4 Competition -->
+                <div class="car-card reveal" data-category="coupe">
+                    <div class="car-card-img">
+                        <img src="https://images.unsplash.com/photo-1625231337038-c55f3e607893?w=700&q=80" alt="BMW M4 Competition" loading="lazy">
+                        <div class="car-card-badge">COUPÉ</div>
+                    </div>
+                    <div class="car-card-body">
+                        <div class="car-card-header">
+                            <div>
+                                <p class="car-card-cat">Precision Coupé</p>
+                                <h3 class="car-card-name">BMW M4 Competition</h3>
+                            </div>
+                            <div class="car-card-price">
+                                <span class="price-from">FROM</span>
+                                <span class="price-val">KES 70,000</span>
+                                <span class="price-per">/day</span>
+                            </div>
+                        </div>
+                        <div class="car-card-specs">
+                            <div class="spec">
+                                <span class="spec-label">Power</span>
+                                <span class="spec-val">510 HP</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">0–100</span>
+                                <span class="spec-val">3.9s</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">Top Speed</span>
+                                <span class="spec-val">290 km/h</span>
+                            </div>
+                        </div>
+                        <div class="car-card-actions">
+                            <a href="https://wa.me/254700000000?text=Hello%20Car%20Clan%2C%20I%20am%20interested%20in%20the%20BMW%20M4%20Competition.%20Please%20advise%20on%20availability." target="_blank" rel="noopener" class="btn-book">Book via WhatsApp</a>
+                            <a href="mailto:concierge@carclan.co.ke?subject=Quote: BMW M4 Competition" class="btn-ghost">Email Enquiry</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Land Cruiser 300 VX.R -->
+                <div class="car-card reveal" data-category="suv">
+                    <div class="car-card-img">
+                        <img src="https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=700&q=80" alt="Land Cruiser 300" loading="lazy">
+                        <div class="car-card-badge">SUV</div>
+                    </div>
+                    <div class="car-card-body">
+                        <div class="car-card-header">
+                            <div>
+                                <p class="car-card-cat">Elite Adventure</p>
+                                <h3 class="car-card-name">Land Cruiser 300 VX.R</h3>
+                            </div>
+                            <div class="car-card-price">
+                                <span class="price-from">FROM</span>
+                                <span class="price-val">KES 55,000</span>
+                                <span class="price-per">/day</span>
+                            </div>
+                        </div>
+                        <div class="car-card-specs">
+                            <div class="spec">
+                                <span class="spec-label">Power</span>
+                                <span class="spec-val">304 HP</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">0–100</span>
+                                <span class="spec-val">6.7s</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">Top Speed</span>
+                                <span class="spec-val">210 km/h</span>
+                            </div>
+                        </div>
+                        <div class="car-card-actions">
+                            <a href="https://wa.me/254700000000?text=Hello%20Car%20Clan%2C%20I%20am%20interested%20in%20the%20Land%20Cruiser%20300%20VX.R.%20Please%20advise%20on%20availability." target="_blank" rel="noopener" class="btn-book">Book via WhatsApp</a>
+                            <a href="mailto:concierge@carclan.co.ke?subject=Quote: Land Cruiser 300 VX.R" class="btn-ghost">Email Enquiry</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BMW M340i xDrive -->
+                <div class="car-card reveal" data-category="sedan">
+                    <div class="car-card-img">
+                        <img src="https://images.unsplash.com/photo-1556189250-72ba954cfc2b?w=700&q=80" alt="BMW M340i" loading="lazy">
+                        <div class="car-card-badge">SEDAN</div>
+                    </div>
+                    <div class="car-card-body">
+                        <div class="car-card-header">
+                            <div>
+                                <p class="car-card-cat">Sport Sedan</p>
+                                <h3 class="car-card-name">BMW M340i xDrive</h3>
+                            </div>
+                            <div class="car-card-price">
+                                <span class="price-from">FROM</span>
+                                <span class="price-val">KES 48,000</span>
+                                <span class="price-per">/day</span>
+                            </div>
+                        </div>
+                        <div class="car-card-specs">
+                            <div class="spec">
+                                <span class="spec-label">Power</span>
+                                <span class="spec-val">382 HP</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">0–100</span>
+                                <span class="spec-val">4.1s</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">Top Speed</span>
+                                <span class="spec-val">250 km/h</span>
+                            </div>
+                        </div>
+                        <div class="car-card-actions">
+                            <a href="https://wa.me/254700000000?text=Hello%20Car%20Clan%2C%20I%20am%20interested%20in%20the%20BMW%20M340i%20xDrive.%20Please%20advise%20on%20availability." target="_blank" rel="noopener" class="btn-book">Book via WhatsApp</a>
+                            <a href="mailto:concierge@carclan.co.ke?subject=Quote: BMW M340i xDrive" class="btn-ghost">Email Enquiry</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BMW 3 Series -->
+                <div class="car-card reveal" data-category="sedan">
+                    <div class="car-card-img">
+                        <img src="https://images.unsplash.com/photo-1523983388277-336a66bf9bcd?w=700&q=80" alt="BMW 3 Series" loading="lazy">
+                        <div class="car-card-badge">SEDAN</div>
+                    </div>
+                    <div class="car-card-body">
+                        <div class="car-card-header">
+                            <div>
+                                <p class="car-card-cat">Luxury Executive</p>
+                                <h3 class="car-card-name">BMW 3 Series</h3>
+                            </div>
+                            <div class="car-card-price">
+                                <span class="price-from">FROM</span>
+                                <span class="price-val">KES 35,000</span>
+                                <span class="price-per">/day</span>
+                            </div>
+                        </div>
+                        <div class="car-card-specs">
+                            <div class="spec">
+                                <span class="spec-label">Power</span>
+                                <span class="spec-val">255 HP</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">0–100</span>
+                                <span class="spec-val">5.6s</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">Top Speed</span>
+                                <span class="spec-val">240 km/h</span>
+                            </div>
+                        </div>
+                        <div class="car-card-actions">
+                            <a href="https://wa.me/254700000000?text=Hello%20Car%20Clan%2C%20I%20am%20interested%20in%20the%20BMW%203%20Series.%20Please%20advise%20on%20availability." target="_blank" rel="noopener" class="btn-book">Book via WhatsApp</a>
+                            <a href="mailto:concierge@carclan.co.ke?subject=Quote: BMW 3 Series" class="btn-ghost">Email Enquiry</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lexus GX 550 Overtrail -->
+                <div class="car-card reveal" data-category="suv">
+                    <div class="car-card-img">
+                        <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=700&q=80" alt="Lexus GX 550" loading="lazy">
+                        <div class="car-card-badge">SUV</div>
+                    </div>
+                    <div class="car-card-body">
+                        <div class="car-card-header">
+                            <div>
+                                <p class="car-card-cat">Rugged Luxury</p>
+                                <h3 class="car-card-name">Lexus GX 550 Overtrail</h3>
+                            </div>
+                            <div class="car-card-price">
+                                <span class="price-from">FROM</span>
+                                <span class="price-val">KES 60,000</span>
+                                <span class="price-per">/day</span>
+                            </div>
+                        </div>
+                        <div class="car-card-specs">
+                            <div class="spec">
+                                <span class="spec-label">Power</span>
+                                <span class="spec-val">349 HP</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">0–100</span>
+                                <span class="spec-val">6.5s</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">Top Speed</span>
+                                <span class="spec-val">175 km/h</span>
+                            </div>
+                        </div>
+                        <div class="car-card-actions">
+                            <a href="https://wa.me/254700000000?text=Hello%20Car%20Clan%2C%20I%20am%20interested%20in%20the%20Lexus%20GX%20550%20Overtrail.%20Please%20advise%20on%20availability." target="_blank" rel="noopener" class="btn-book">Book via WhatsApp</a>
+                            <a href="mailto:concierge@carclan.co.ke?subject=Quote: Lexus GX 550 Overtrail" class="btn-ghost">Email Enquiry</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lexus RX 450h+ -->
+                <div class="car-card reveal" data-category="suv">
+                    <div class="car-card-img">
+                        <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=700&q=80" alt="Lexus RX 450h" loading="lazy">
+                        <div class="car-card-badge">SUV</div>
+                    </div>
+                    <div class="car-card-body">
+                        <div class="car-card-header">
+                            <div>
+                                <p class="car-card-cat">Luxury Hybrid</p>
+                                <h3 class="car-card-name">Lexus RX 450h+</h3>
+                            </div>
+                            <div class="car-card-price">
+                                <span class="price-from">FROM</span>
+                                <span class="price-val">KES 50,000</span>
+                                <span class="price-per">/day</span>
+                            </div>
+                        </div>
+                        <div class="car-card-specs">
+                            <div class="spec">
+                                <span class="spec-label">Power</span>
+                                <span class="spec-val">304 HP</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">0–100</span>
+                                <span class="spec-val">6.5s</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">Top Speed</span>
+                                <span class="spec-val">200 km/h</span>
+                            </div>
+                        </div>
+                        <div class="car-card-actions">
+                            <a href="https://wa.me/254700000000?text=Hello%20Car%20Clan%2C%20I%20am%20interested%20in%20the%20Lexus%20RX%20450h%2B.%20Please%20advise%20on%20availability." target="_blank" rel="noopener" class="btn-book">Book via WhatsApp</a>
+                            <a href="mailto:concierge@carclan.co.ke?subject=Quote: Lexus RX 450h+" class="btn-ghost">Email Enquiry</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BMW X5 xDrive40i -->
+                <div class="car-card reveal" data-category="suv">
+                    <div class="car-card-img">
+                        <img src="https://images.unsplash.com/photo-1571987502227-9231b837d92a?w=700&q=80" alt="BMW X5" loading="lazy">
+                        <div class="car-card-badge">SUV</div>
+                    </div>
+                    <div class="car-card-body">
+                        <div class="car-card-header">
+                            <div>
+                                <p class="car-card-cat">Luxury SUV</p>
+                                <h3 class="car-card-name">BMW X5 xDrive40i</h3>
+                            </div>
+                            <div class="car-card-price">
+                                <span class="price-from">FROM</span>
+                                <span class="price-val">KES 65,000</span>
+                                <span class="price-per">/day</span>
+                            </div>
+                        </div>
+                        <div class="car-card-specs">
+                            <div class="spec">
+                                <span class="spec-label">Power</span>
+                                <span class="spec-val">375 HP</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">0–100</span>
+                                <span class="spec-val">5.3s</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">Top Speed</span>
+                                <span class="spec-val">240 km/h</span>
+                            </div>
+                        </div>
+                        <div class="car-card-actions">
+                            <a href="https://wa.me/254700000000?text=Hello%20Car%20Clan%2C%20I%20am%20interested%20in%20the%20BMW%20X5%20xDrive40i.%20Please%20advise%20on%20availability." target="_blank" rel="noopener" class="btn-book">Book via WhatsApp</a>
+                            <a href="mailto:concierge@carclan.co.ke?subject=Quote: BMW X5 xDrive40i" class="btn-ghost">Email Enquiry</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lexus LX 700h -->
+                <div class="car-card reveal" data-category="suv">
+                    <div class="car-card-img">
+                        <img src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=700&q=80" alt="Lexus LX 700h" loading="lazy">
+                        <div class="car-card-badge">SUV</div>
+                    </div>
+                    <div class="car-card-body">
+                        <div class="car-card-header">
+                            <div>
+                                <p class="car-card-cat">Flagship SUV</p>
+                                <h3 class="car-card-name">Lexus LX 700h</h3>
+                            </div>
+                            <div class="car-card-price">
+                                <span class="price-from">FROM</span>
+                                <span class="price-val">KES 85,000</span>
+                                <span class="price-per">/day</span>
+                            </div>
+                        </div>
+                        <div class="car-card-specs">
+                            <div class="spec">
+                                <span class="spec-label">Power</span>
+                                <span class="spec-val">457 HP</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">0–100</span>
+                                <span class="spec-val">6.4s</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">Top Speed</span>
+                                <span class="spec-val">210 km/h</span>
+                            </div>
+                        </div>
+                        <div class="car-card-actions">
+                            <a href="https://wa.me/254700000000?text=Hello%20Car%20Clan%2C%20I%20am%20interested%20in%20the%20Lexus%20LX%20700h.%20Please%20advise%20on%20availability." target="_blank" rel="noopener" class="btn-book">Book via WhatsApp</a>
+                            <a href="mailto:concierge@carclan.co.ke?subject=Quote: Lexus LX 700h" class="btn-ghost">Email Enquiry</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Land Cruiser 250 -->
+                <div class="car-card reveal" data-category="suv">
+                    <div class="car-card-img">
+                        <img src="https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=700&q=80" alt="Land Cruiser 250" loading="lazy">
+                        <div class="car-card-badge">SUV</div>
+                    </div>
+                    <div class="car-card-body">
+                        <div class="car-card-header">
+                            <div>
+                                <p class="car-card-cat">Modern Legend</p>
+                                <h3 class="car-card-name">Land Cruiser 250</h3>
+                            </div>
+                            <div class="car-card-price">
+                                <span class="price-from">FROM</span>
+                                <span class="price-val">KES 45,000</span>
+                                <span class="price-per">/day</span>
+                            </div>
+                        </div>
+                        <div class="car-card-specs">
+                            <div class="spec">
+                                <span class="spec-label">Power</span>
+                                <span class="spec-val">326 HP</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">0–100</span>
+                                <span class="spec-val">8.0s</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">Top Speed</span>
+                                <span class="spec-val">175 km/h</span>
+                            </div>
+                        </div>
+                        <div class="car-card-actions">
+                            <a href="https://wa.me/254700000000?text=Hello%20Car%20Clan%2C%20I%20am%20interested%20in%20the%20Land%20Cruiser%20250.%20Please%20advise%20on%20availability." target="_blank" rel="noopener" class="btn-book">Book via WhatsApp</a>
+                            <a href="mailto:concierge@carclan.co.ke?subject=Quote: Land Cruiser 250" class="btn-ghost">Email Enquiry</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BMW M5 (2018) -->
+                <div class="car-card reveal" data-category="sedan">
+                    <div class="car-card-img">
+                        <img src="https://images.unsplash.com/photo-1520031441872-265e4ff70366?w=700&q=80" alt="BMW M5 2018" loading="lazy">
+                        <div class="car-card-badge">SEDAN</div>
+                    </div>
+                    <div class="car-card-body">
+                        <div class="car-card-header">
+                            <div>
+                                <p class="car-card-cat">Luxury Sedan</p>
+                                <h3 class="car-card-name">BMW M5 (2018)</h3>
+                            </div>
+                            <div class="car-card-price">
+                                <span class="price-from">FROM</span>
+                                <span class="price-val">KES 65,000</span>
+                                <span class="price-per">/day</span>
+                            </div>
+                        </div>
+                        <div class="car-card-specs">
+                            <div class="spec">
+                                <span class="spec-label">Power</span>
+                                <span class="spec-val">600 HP</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">0–100</span>
+                                <span class="spec-val">3.1s</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">Top Speed</span>
+                                <span class="spec-val">250 km/h</span>
+                            </div>
+                        </div>
+                        <div class="car-card-actions">
+                            <a href="https://wa.me/254700000000?text=Hello%20Car%20Clan%2C%20I%20am%20interested%20in%20the%20BMW%20M5%20(2018).%20Please%20advise%20on%20availability." target="_blank" rel="noopener" class="btn-book">Book via WhatsApp</a>
+                            <a href="mailto:concierge@carclan.co.ke?subject=Quote: BMW M5 (2018)" class="btn-ghost">Email Enquiry</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mercedes C220 W206 -->
+                <div class="car-card reveal" data-category="sedan">
+                    <div class="car-card-img">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=700&q=80" alt="Mercedes C220" loading="lazy">
+                        <div class="car-card-badge">SEDAN</div>
+                    </div>
+                    <div class="car-card-body">
+                        <div class="car-card-header">
+                            <div>
+                                <p class="car-card-cat">Modern Executive</p>
+                                <h3 class="car-card-name">Mercedes C220 W206</h3>
+                            </div>
+                            <div class="car-card-price">
+                                <span class="price-from">FROM</span>
+                                <span class="price-val">KES 28,000</span>
+                                <span class="price-per">/day</span>
+                            </div>
+                        </div>
+                        <div class="car-card-specs">
+                            <div class="spec">
+                                <span class="spec-label">Power</span>
+                                <span class="spec-val">197 HP</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">0–100</span>
+                                <span class="spec-val">7.3s</span>
+                            </div>
+                            <div class="spec">
+                                <span class="spec-label">Top Speed</span>
+                                <span class="spec-val">245 km/h</span>
+                            </div>
+                        </div>
+                        <div class="car-card-actions">
+                            <a href="https://wa.me/254700000000?text=Hello%20Car%20Clan%2C%20I%20am%20interested%20in%20the%20Mercedes%20C220%20W206.%20Please%20advise%20on%20availability." target="_blank" rel="noopener" class="btn-book">Book via WhatsApp</a>
+                            <a href="mailto:concierge@carclan.co.ke?subject=Quote: Mercedes C220 W206" class="btn-ghost">Email Enquiry</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -1938,6 +2839,29 @@
 
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeLightbox();
+        });
+
+        // Fleet Filtering logic
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn')
+                    .forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const filter = btn.dataset.filter;
+                document.querySelectorAll('.car-card').forEach(card => {
+                    const match = filter === 'all' || 
+                                  card.dataset.category === filter;
+                    card.style.display  = match ? 'block' : 'none';
+                    if (match) {
+                        setTimeout(() => {
+                            card.style.opacity = '1';
+                        }, 10);
+                    } else {
+                        card.style.opacity = '0';
+                    }
+                });
+            });
         });
 
     </script>
